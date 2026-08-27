@@ -17,6 +17,7 @@ export function CommandPalette() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const router = useRouter();
   const { setTheme } = useTheme();
 
@@ -60,6 +61,7 @@ export function CommandPalette() {
         if (res.ok) {
           const data = await res.json();
           setResults(data.results.slice(0, 5)); // Limit to 5 results
+          setSelectedIndex(0);
         }
       } catch (error) {
         console.error('Search failed', error);
@@ -75,6 +77,44 @@ export function CommandPalette() {
     setOpen(false);
     command();
   }, []);
+
+  // Handle keyboard navigation inside the modal
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Calculate total clickable items based on view state
+      const totalItems = query === '' ? 7 : results.length; // 7 static links when no query
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev + 1) % totalItems);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev - 1 + totalItems) % totalItems);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (query !== '' && results.length > 0) {
+          runCommand(() => router.push(`/articles/${results[selectedIndex].slug}`));
+        } else if (query === '') {
+          // Static routing mapping based on index
+          const staticRoutes = [
+            () => router.push('/'),
+            () => router.push('/articles'),
+            () => router.push('/newsletter'),
+            () => router.push('/history'),
+            () => setTheme('light'),
+            () => setTheme('dark'),
+            () => setTheme('system')
+          ];
+          runCommand(staticRoutes[selectedIndex]);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, query, results, selectedIndex, router, setTheme, runCommand]);
 
   if (!open) return null;
 
@@ -117,17 +157,23 @@ export function CommandPalette() {
               <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 Articles
               </div>
-              {results.map((result) => (
+              {results.map((result, index) => (
                 <button
                   key={result.slug}
-                  className="group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    index === selectedIndex
+                      ? 'bg-primary/20 text-primary border-transparent'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => router.push(`/articles/${result.slug}`))}
+                  onMouseEnter={() => setSelectedIndex(index)}
                 >
-                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <FileText className={`h-4 w-4 shrink-0 ${index === selectedIndex ? 'text-primary' : 'text-muted-foreground'}`} />
                   <div className="flex flex-1 flex-col overflow-hidden">
                     <span className="truncate font-medium">{result.title}</span>
+                    <span className="truncate text-xs text-muted-foreground/70">{result.description}</span>
                   </div>
-                  <ArrowRight className="h-4 w-4 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowRight className={`h-4 w-4 shrink-0 transition-opacity ${index === selectedIndex ? 'opacity-100 text-primary' : 'opacity-0 group-hover:opacity-100'}`} />
                 </button>
               ))}
             </div>
@@ -140,31 +186,51 @@ export function CommandPalette() {
                   Navigation
                 </div>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === 0
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => router.push('/'))}
+                  onMouseEnter={() => setSelectedIndex(0)}
                 >
-                  <Layout className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <Layout className={`h-4 w-4 shrink-0 ${selectedIndex === 0 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Home</span>
                 </button>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === 1
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => router.push('/articles'))}
+                  onMouseEnter={() => setSelectedIndex(1)}
                 >
-                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === 1 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Articles</span>
                 </button>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === 2
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => router.push('/newsletter'))}
+                  onMouseEnter={() => setSelectedIndex(2)}
                 >
-                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === 2 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Newsletter</span>
                 </button>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === 3
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => router.push('/history'))}
+                  onMouseEnter={() => setSelectedIndex(3)}
                 >
-                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === 3 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Reading History</span>
                 </button>
               </div>
@@ -174,24 +240,39 @@ export function CommandPalette() {
                   Theme
                 </div>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === 4
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => setTheme('light'))}
+                  onMouseEnter={() => setSelectedIndex(4)}
                 >
-                  <Sun className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <Sun className={`h-4 w-4 shrink-0 ${selectedIndex === 4 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Light Theme</span>
                 </button>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === 5
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => setTheme('dark'))}
+                  onMouseEnter={() => setSelectedIndex(5)}
                 >
-                  <Moon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <Moon className={`h-4 w-4 shrink-0 ${selectedIndex === 5 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Dark Theme</span>
                 </button>
                 <button
-                  className="flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === 6
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
                   onClick={() => runCommand(() => setTheme('system'))}
+                  onMouseEnter={() => setSelectedIndex(6)}
                 >
-                  <Laptop className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <Laptop className={`h-4 w-4 shrink-0 ${selectedIndex === 6 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">System Theme</span>
                 </button>
               </div>
