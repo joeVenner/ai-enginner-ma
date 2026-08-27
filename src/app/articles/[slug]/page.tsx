@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import { TableOfContents } from '@/components/table-of-contents';
 import { MobileToc } from '@/components/mobile-toc';
+import { MobileActionsBar } from '@/components/mobile-actions-bar';
 import { ArticleSeries } from '@/components/article-series';
 import { ArticleFooterActions } from '@/components/article-footer-actions';
 import { ShareButtons } from '@/components/share-buttons';
@@ -257,6 +258,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <TableOfContents content={article.content} />
         </aside>
       </div>
+
+      <MobileActionsBar title={title} slug={article.slug} />
     </article>
   );
 }
