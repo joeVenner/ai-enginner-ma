@@ -17,6 +17,7 @@ import { Mermaid } from './mermaid';
 import { FileTree, TreeFolder, TreeFile } from './file-tree';
 import { Timeline, TimelineItem } from './timeline';
 import { Badge } from './badge';
+import { MathBlock } from './math';
 import { CodeBlockWrapper } from '../code-block-wrapper';
 import { HTMLAttributes } from 'react';
 
@@ -60,5 +61,6 @@ export const mdxComponents = {
   Timeline,
   TimelineItem,
   Badge,
+  MathBlock,
   CodeBlockWrapper,
 };
