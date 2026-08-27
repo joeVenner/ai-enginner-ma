@@ -246,3 +246,22 @@ pre code, .prose pre code {
   tab-size: 2 !important;
   hyphens: none !important;
 }
+
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+    width: 0%;
+  }
+  50% {
+    transform: translateX(0%);
+    width: 50%;
+  }
+  100% {
+    transform: translateX(100%);
+    width: 100%;
+  }
+}
+
+@theme {
+  --animate-progress-indeterminate: progress-indeterminate 1.5s infinite linear;
+}

@@ -5,9 +5,11 @@ import { ThemeToggle } from './theme-toggle';
 import { siteConfig } from '@/config/site';
 import { GithubIcon } from './icons';
 import { useState, useRef, useEffect } from 'react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 
 export function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,16 +18,32 @@ export function Header() {
         setIsDropdownOpen(false);
       }
     }
+    
+    function handleScroll() {
+      setScrolled(window.scrollY > 20);
+    }
+    
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+      scrolled 
+        ? 'border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm' 
+        : 'border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
+    }`}>
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <div className="flex gap-6 md:gap-8 items-center">
-          <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
-            <Terminal className="h-6 w-6 text-primary" />
+          <Link href="/" className="flex items-center space-x-2 flex-shrink-0 group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
+              <Terminal className="h-5 w-5 text-primary" />
+            </div>
             <span className="inline-block font-bold tracking-tight">
               {siteConfig.name}
             </span>
@@ -91,26 +109,43 @@ export function Header() {
             >
               Search <kbd className="ml-2 hidden rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:inline-block">⌘K</kbd>
             </Link>
-            <a
-              href="/rss.xml"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              title="RSS Feed"
-            >
-              <Rss className="h-[1.2rem] w-[1.2rem]" />
-              <span className="sr-only">RSS Feed</span>
-            </a>
-            <a
-              href={siteConfig.links.github}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              title="GitHub"
-            >
-              <GithubIcon className="h-[1.2rem] w-[1.2rem]" />
-              <span className="sr-only">GitHub Repository</span>
-            </a>
+            
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href="/rss.xml"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <Rss className="h-[1.2rem] w-[1.2rem]" />
+                    <span className="sr-only">RSS Feed</span>
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" align="center">
+                  <p>RSS Feed</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={siteConfig.links.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <GithubIcon className="h-[1.2rem] w-[1.2rem]" />
+                    <span className="sr-only">GitHub Repository</span>
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" align="center">
+                  <p>GitHub Repository</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
             <ThemeToggle />
           </nav>
         </div>

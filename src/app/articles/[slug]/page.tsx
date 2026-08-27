@@ -16,7 +16,8 @@ import { ArticleNav } from '@/components/article-nav';
 import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
-import { ArticleFeedback } from '@/components/article-feedback';
+import { ArticleFeedback } from "@/components/article-feedback";
+import { Comments } from "@/components/comments";
 import { ArticleSchema } from '@/components/schema-org';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
@@ -219,6 +220,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Related Articles */}
           <RelatedArticles currentArticle={article} allArticles={allArticles} />
+
+          <Comments />
 
           {/* Newsletter */}
           <Newsletter />
