@@ -10,6 +10,8 @@ import { Blockquote } from './blockquote';
 import { Axiom } from './axiom';
 import { EntityLink } from './entity-link';
 import { Steps } from './steps';
+import { Accordion, AccordionItem } from './accordion';
+import { Card, CardGrid } from './card';
 import { HTMLAttributes } from 'react';
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement>;
@@ -40,4 +42,8 @@ export const mdxComponents = {
   Axiom,
   EntityLink,
   Steps,
+  Accordion,
+  AccordionItem,
+  Card,
+  CardGrid,
 };
