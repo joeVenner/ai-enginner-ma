@@ -10,7 +10,7 @@ import { ShareButtons } from '@/components/share-buttons';
 import { ArticleNav } from '@/components/article-nav';
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
-import { MobileProgress } from '@/components/mobile-progress';
+import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
 
 interface ArticlePageProps {
@@ -88,7 +88,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
-      <MobileProgress />
+      <ReadingProgress />
       {/* Back button */}
       <Link
         href="/articles"
