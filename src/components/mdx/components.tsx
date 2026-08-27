@@ -6,6 +6,7 @@ import { YouTube } from './youtube';
 import { Heading } from './heading';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
 import { Table, TableHeader, TableRow, TableHead, TableCell } from './table';
+import { Blockquote } from './blockquote';
 import { HTMLAttributes } from 'react';
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement>;
@@ -32,4 +33,5 @@ export const mdxComponents = {
   tr: TableRow,
   th: TableHead,
   td: TableCell,
+  blockquote: Blockquote,
 };
