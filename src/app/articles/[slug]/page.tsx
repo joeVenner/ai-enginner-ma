@@ -25,6 +25,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
+import { remarkAdmonition } from '@/components/mdx/remark-admonition';
 import rehypeKatex from 'rehype-katex';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -199,7 +200,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               components={mdxComponents}
               options={{
                 mdxOptions: {
-                  remarkPlugins: [remarkGfm, remarkMath],
+                  remarkPlugins: [remarkGfm, remarkMath, remarkAdmonition],
                   rehypePlugins: [
                     rehypeSlug,
                     [rehypeAutolinkHeadings, {
