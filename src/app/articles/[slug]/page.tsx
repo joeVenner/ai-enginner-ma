@@ -21,6 +21,7 @@ import { HistoryTracker } from '@/components/history-tracker';
 import { Comments } from "@/components/comments";
 import { ArticleSchema } from '@/components/schema-org';
 import { ReadAloud } from '@/components/read-aloud';
+import { AiSummary } from '@/components/ai-summary';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
@@ -93,7 +94,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const { title, description, date, author, category, tags, image } = article.frontmatter;
+  const { title, description, date, author, category, tags, image, aiSummary } = article.frontmatter;
 
   return (
     <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
@@ -109,7 +110,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         }}
       />
       <EstimatedRead readingTime={article.readingTime} />
-      
+
       {/* Back button */}
       <Link
         href="/articles"
@@ -192,6 +193,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Series Outline */}
           <ArticleSeries currentArticle={article} allArticles={allArticles} />
+
+          {/* AI Summary Component */}
+          {aiSummary && aiSummary.length > 0 && (
+            <AiSummary summaryPoints={aiSummary} />
+          )}
 
           <div className="prose prose-zinc dark:prose-invert prose-lg md:prose-xl max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-xl">
             <MDXRemote
