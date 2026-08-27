@@ -11,6 +11,7 @@ import { ScrollToTop } from "@/components/scroll-to-top";
 import { AnalyticsTracker } from "@/components/analytics-tracker";
 import { EasterEgg } from "@/components/easter-egg";
 import { GlobalScrollProgress } from "@/components/scroll-progress";
+import { ScrollPositionMemory } from "@/components/scroll-position-memory";
 
 // Optimized font loading
 const inter = Inter({ 
@@ -82,6 +83,7 @@ export default function RootLayout({
         >
           <div className="relative flex min-h-screen flex-col bg-background">
             <GlobalScrollProgress />
+            <ScrollPositionMemory />
             <AnalyticsTracker />
             <Header />
             <CommandPalette />
