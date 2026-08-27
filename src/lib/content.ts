@@ -1,0 +1,235 @@
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
+import { marked } from 'marked';
+import { markedHighlight } from 'marked-highlight';
+import hljs from 'highlight.js';
+import markedKatex from 'marked-katex-extension';
+
+export interface ArticleFrontmatter {
+  title: string;
+  description: string;
+  date: string;
+  author?: string;
+  category?: string;
+  tags?: string[];
+  image?: string;
+  featured?: boolean;
+  draft?: boolean;
+}
+
+export interface Article {
+  slug: string;
+  frontmatter: ArticleFrontmatter;
+  content: string; // Original markdown
+  html?: string;   // Parsed HTML
+  readingTime: number;
+}
+
+// Directory where articles are stored
+const contentDirectory = path.join(process.cwd(), 'content/articles');
+
+// Calculate estimated reading time
+function calculateReadingTime(text: string): number {
+  const wordsPerMinute = 200;
+  const noOfWords = text.split(/\s/g).length;
+  const minutes = noOfWords / wordsPerMinute;
+  return Math.ceil(minutes);
+}
+
+// Ensure the directory exists
+function ensureDirectoryExists() {
+  if (!fs.existsSync(contentDirectory)) {
+    fs.mkdirSync(contentDirectory, { recursive: true });
+  }
+}
+
+
+marked.use(markedKatex({
+  throwOnError: false,
+  displayMode: true
+}));
+
+// Setup marked with syntax highlighting and automatic heading IDs
+marked.use(
+  markedHighlight({
+    emptyLangClass: 'hljs',
+    langPrefix: 'hljs language-',
+    highlight(code, lang) {
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+      return hljs.highlight(code, { language }).value;
+    }
+  })
+);
+
+// Add heading IDs for table of contents
+const renderer = new marked.Renderer();
+renderer.heading = function (args: any) {
+  const t = typeof args.text === 'string' ? args.text : String(args.text);
+  const depth = args.depth || 2;
+
+  // Extract just the plain text for the ID (strip HTML tags that marked might have added)
+  const plainText = t.replace(/<[^>]*>?/gm, '');
+
+  const escapedText = plainText
+    .toLowerCase()
+    .replace(/[^\w]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return `
+          <h${depth} id="${escapedText}">
+            ${t}
+          </h${depth}>`;
+};
+marked.use({ renderer });
+
+// Default sensible fallback values
+const DEFAULT_AUTHOR = 'Editor';
+const DEFAULT_DATE = new Date().toISOString().split('T')[0];
+
+/**
+ * Validates and provides defaults for frontmatter
+ */
+function validateFrontmatter(data: Record<string, unknown>, slug: string): ArticleFrontmatter {
+  // Extract or default values
+  return {
+    title: (data.title as string) || `Untitled Article (${slug})`,
+    description: (data.description as string) || 'No description provided.',
+    date: (data.date as string) || DEFAULT_DATE,
+    author: (data.author as string) || DEFAULT_AUTHOR,
+    category: (data.category as string) || 'Uncategorized',
+    tags: Array.isArray(data.tags) ? data.tags as string[] : [],
+    image: (data.image as string) || undefined,
+    featured: !!data.featured,
+    draft: !!data.draft,
+  };
+}
+
+/**
+ * Gets a single article by its slug
+ */
+export async function getArticleBySlug(slug: string, withHtml = false): Promise<Article | null> {
+  try {
+    ensureDirectoryExists();
+
+    // We allow finding files with or without .md extension in the slug
+    const realSlug = slug.replace(/\.md$/, '');
+    const fullPath = path.join(contentDirectory, `${realSlug}.md`);
+
+    if (!fs.existsSync(fullPath)) {
+      return null;
+    }
+
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
+
+    // Use gray-matter to parse the post metadata section
+    const { data, content } = matter(fileContents);
+
+    const frontmatter = validateFrontmatter(data, realSlug);
+
+    const article: Article = {
+      slug: realSlug,
+      frontmatter,
+      content,
+      readingTime: calculateReadingTime(content),
+    };
+
+    if (withHtml) {
+      article.html = await marked.parse(content);
+    }
+
+    return article;
+  } catch (error) {
+    console.error(`Error reading article \${slug}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Gets all published articles, sorted by date (newest first)
+ */
+export async function getAllArticles(): Promise<Article[]> {
+  ensureDirectoryExists();
+
+  try {
+    const fileNames = fs.readdirSync(contentDirectory);
+
+    const articlesPromise = fileNames
+      .filter((fileName) => fileName.endsWith('.md'))
+      .map(async (fileName) => {
+        const slug = fileName.replace(/\.md$/, '');
+        const article = await getArticleBySlug(slug);
+        return article;
+      });
+
+const articles = (await Promise.all(articlesPromise))
+      .filter((article): article is Article => article !== null)
+      .filter((article) => process.env.NODE_ENV === 'development' || !article.frontmatter.draft);
+
+    // Sort articles by date
+    return articles.sort((a, b) => {
+      if (a.frontmatter.date < b.frontmatter.date) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+  } catch (error) {
+    console.error('Error reading all articles:', error);
+    return [];
+  }
+}
+
+/**
+ * Get all unique categories across all articles
+ */
+export async function getAllCategories(): Promise<string[]> {
+  const articles = await getAllArticles();
+  const categories = new Set<string>();
+
+  articles.forEach((article) => {
+    if (article.frontmatter.category) {
+      categories.add(article.frontmatter.category);
+    }
+  });
+
+  return Array.from(categories).sort();
+}
+
+/**
+ * Get all unique tags across all articles
+ */
+export async function getAllTags(): Promise<string[]> {
+  const articles = await getAllArticles();
+  const tags = new Set<string>();
+
+  articles.forEach((article) => {
+    if (article.frontmatter.tags) {
+      article.frontmatter.tags.forEach(tag => tags.add(tag));
+    }
+  });
+
+  return Array.from(tags).sort();
+}
+
+/**
+ * Get adjacent articles (previous/next) for navigation
+ */
+export async function getAdjacentArticles(currentSlug: string): Promise<{
+  prev: Article | null;
+  next: Article | null;
+}> {
+  const articles = await getAllArticles();
+  const currentIndex = articles.findIndex(article => article.slug === currentSlug);
+  
+  if (currentIndex === -1) {
+    return { prev: null, next: null };
+  }
+  
+  return {
+    // Array is sorted newest first, so "next" (newer) is previous index
+    // and "prev" (older) is next index
+    next: currentIndex > 0 ? articles[currentIndex - 1] : null,
+    prev: currentIndex < articles.length - 1 ? articles[currentIndex + 1] : null,
+  };
+}
