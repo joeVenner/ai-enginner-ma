@@ -28,11 +28,13 @@ export function BookmarkButton({ slug }: BookmarkButtonProps) {
 
   const toggleBookmark = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigating if this is inside a link wrapper
-    
+
     try {
       const saved = localStorage.getItem('aiengineer_bookmarks');
       let bookmarks: string[] = saved ? JSON.parse(saved) : [];
-      
+
+      const newBookmarkedState = !isBookmarked;
+
       if (isBookmarked) {
         // Remove bookmark
         bookmarks = bookmarks.filter(b => b !== slug);
@@ -42,10 +44,29 @@ export function BookmarkButton({ slug }: BookmarkButtonProps) {
           bookmarks.push(slug);
         }
       }
-      
+
       localStorage.setItem('aiengineer_bookmarks', JSON.stringify(bookmarks));
-      setIsBookmarked(!isBookmarked);
-      
+      setIsBookmarked(newBookmarkedState);
+
+      // Update local analytics
+      const metricsStr = localStorage.getItem('reader-metrics-v1');
+      if (metricsStr) {
+         const metrics = JSON.parse(metricsStr);
+         if (!metrics.bookmarks) metrics.bookmarks = {};
+         metrics.bookmarks[slug] = newBookmarkedState;
+         localStorage.setItem('reader-metrics-v1', JSON.stringify(metrics));
+      } else {
+         localStorage.setItem('reader-metrics-v1', JSON.stringify({
+           pageViews: 0,
+           articleViews: {},
+           timeOnSite: 0,
+           lastVisited: null,
+           shares: {},
+           claps: {},
+           bookmarks: { [slug]: newBookmarkedState }
+         }));
+      }
+
       // Dispatch custom event so other components can update
       window.dispatchEvent(new Event('bookmarks-updated'));
     } catch (e) {

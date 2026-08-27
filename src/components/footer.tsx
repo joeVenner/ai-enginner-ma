@@ -40,6 +40,9 @@ export function Footer() {
               <li>
                 <Link href="/newsletter" className="hover:text-foreground transition-colors">Newsletter</Link>
               </li>
+              <li>
+                <Link href="/analytics" className="hover:text-foreground transition-colors">Analytics</Link>
+              </li>
               <li className="flex gap-2">
                 <a href="/rss.xml" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors" title="RSS Feed">
                   RSS

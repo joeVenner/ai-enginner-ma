@@ -64,6 +64,26 @@ export function ClapButton({ slug, className }: ClapButtonProps) {
       const parsed = saved ? JSON.parse(saved) : {};
       parsed[slug] = newClaps;
       localStorage.setItem('aiengineer_claps', JSON.stringify(parsed));
+
+      // Update local analytics
+      const metricsStr = localStorage.getItem('reader-metrics-v1');
+      if (metricsStr) {
+         const metrics = JSON.parse(metricsStr);
+         if (!metrics.claps) metrics.claps = {};
+         metrics.claps[slug] = newClaps;
+         localStorage.setItem('reader-metrics-v1', JSON.stringify(metrics));
+      } else {
+         localStorage.setItem('reader-metrics-v1', JSON.stringify({
+           pageViews: 0,
+           articleViews: {},
+           timeOnSite: 0,
+           lastVisited: null,
+           bookmarks: {},
+           shares: {},
+           claps: { [slug]: newClaps }
+         }));
+      }
+
     } catch (e) {
       console.error('Error saving claps', e);
     }

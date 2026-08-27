@@ -12,6 +12,7 @@ import { AnalyticsTracker } from "@/components/analytics-tracker";
 import { EasterEgg } from "@/components/easter-egg";
 import { GlobalScrollProgress } from "@/components/scroll-progress";
 import { ScrollPositionMemory } from "@/components/scroll-position-memory";
+import { LocalAnalyticsProvider } from "@/components/local-analytics-provider";
 
 // Optimized font loading
 const inter = Inter({ 
@@ -84,6 +85,7 @@ export default function RootLayout({
           <div className="relative flex min-h-screen flex-col bg-background">
             <GlobalScrollProgress />
             <ScrollPositionMemory />
+            <LocalAnalyticsProvider />
             <AnalyticsTracker />
             <Header />
             <CommandPalette />
