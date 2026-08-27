@@ -9,6 +9,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 import { MobileNav } from '@/components/mobile-nav';
 import { HighContrastToggle } from '@/components/high-contrast-toggle';
+import { TextSizeAdjust } from '@/components/text-size-adjust';
 
 export function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -166,6 +167,7 @@ export function Header() {
             </TooltipProvider>
             
             <ThemeToggle />
+            <TextSizeAdjust />
             <HighContrastToggle />
           </nav>
         </div>
