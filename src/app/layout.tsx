@@ -8,6 +8,7 @@ import { Footer } from '@/components/footer';
 import { BackToTop } from '@/components/back-to-top';
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { CommandPalette } from '@/components/command-palette';
+import TopLoader from '@/components/top-loader';
 import { siteConfig } from '@/config/site';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { WebSiteSchema } from '@/components/schema-org';
@@ -63,6 +64,7 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} min-h-screen bg-background font-sans antialiased selection:bg-primary selection:text-primary-foreground`}
       >
         <WebSiteSchema />
+        <TopLoader />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
