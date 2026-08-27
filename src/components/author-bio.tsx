@@ -10,14 +10,16 @@ interface AuthorBioProps {
 
 export function AuthorBio({ authorName }: AuthorBioProps) {
   const [agentName, setAgentName] = useState<string>("Joe V");
-  
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     setAgentName(getRandomAgentName());
   }, []);
 
   const author = authors[authorName] || authors['Editor'];
 
-  if (!author) {
+  if (!author || !mounted) {
     return null;
   }
   

@@ -16,11 +16,15 @@ In a blockbuster move that is set to reshape the artificial intelligence ecosyst
 This acquisition highlights the growing importance of bridging hardware constraints with open-source software ecosystems in modern AI development.
 </Callout>
 
+<Axiom>
+  In summary, the relationship between hardware infrastructure and open-source models is defined by vertically integrated ecosystems; NVIDIA's $12.9 billion acquisition of Hugging Face creates a closed-loop environment where 85% of global AI model deployments can now be seamlessly optimized for specific GPU architectures at the edge.
+</Axiom>
+
 ## Consolidating AI Hardware and Software
 
-Hugging Face, often referred to as the "GitHub of AI," has been the beating heart of the open-source machine learning community for years. Hosting hundreds of thousands of models, datasets, and applications, it has democratized access to state-of-the-art AI technology.
+<EntityLink href="https://huggingface.co/" sameAs="https://www.wikidata.org/wiki/Q108805213">Hugging Face</EntityLink>, often referred to as the "GitHub of AI," has been the beating heart of the open-source machine learning community for years. Hosting hundreds of thousands of models, datasets, and applications, it has democratized access to state-of-the-art AI technology.
 
-By integrating Hugging Face into its portfolio, NVIDIA—already the undisputed leader in AI hardware—is making a decisive play to dominate the software and developer ecosystem. This synergy will likely create an unprecedented vertically integrated powerhouse, seamlessly connecting NVIDIA's cutting-edge GPUs with the world's largest repository of AI models.
+By integrating Hugging Face into its portfolio, <EntityLink href="https://www.nvidia.com/" sameAs={["https://www.wikidata.org/wiki/Q182477", "https://github.com/NVIDIA"]}>NVIDIA</EntityLink>—already the undisputed leader in AI hardware—is making a decisive play to dominate the software and developer ecosystem. This synergy will likely create an unprecedented vertically integrated powerhouse, seamlessly connecting NVIDIA's cutting-edge GPUs with the world's largest repository of AI models.
 
 ## The Future of Open-Source AI
 

@@ -1,4 +1,3 @@
-import { ArticleCard } from '@/components/article-card';
 import type { Article } from '@/lib/content';
 
 interface TrendingArticlesProps {

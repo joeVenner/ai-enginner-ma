@@ -44,14 +44,20 @@ export function ZoomImage({ src, alt, className, ...props }: ZoomImageProps) {
         )}
         onClick={() => setIsZoomed(true)}
         loading="lazy"
+        decoding="async"
         {...props}
       />
 
       {/* Full screen overlay */}
       {isZoomed && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-sm cursor-zoom-out p-4 md:p-12 animate-in fade-in duration-200"
           onClick={() => setIsZoomed(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setIsZoomed(false);
+          }}
+          role="dialog"
+          tabIndex={-1}
         >
           <button 
             className="absolute top-6 right-6 md:top-10 md:right-10 flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors z-[101]"
@@ -67,6 +73,8 @@ export function ZoomImage({ src, alt, className, ...props }: ZoomImageProps) {
             src={src}
             alt={alt || ''}
             className="max-h-full max-w-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
+            loading="lazy"
+            decoding="async"
           />
           
           {alt && (

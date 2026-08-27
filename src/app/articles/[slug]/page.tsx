@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getArticleBySlug, getAllArticles, getAdjacentArticles } from '@/lib/content';
+import { getArticleBySlug, getAllArticles } from '@/lib/content';
 import { format, parseISO } from 'date-fns';
 import { Calendar, Clock, User, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -49,10 +49,9 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
   const url = `${siteConfig.url}/articles/${article.slug}`;
 
-  // Use explicit frontmatter image, OR fallback to dynamic OG image generation API
-  const ogImage = article.frontmatter.image
-    ? `${siteConfig.url}${article.frontmatter.image}`
-    : `${siteConfig.url}/api/og?title=${encodeURIComponent(article.frontmatter.title)}&category=${encodeURIComponent(article.frontmatter.category || 'Article')}`;
+  // Next.js app router automatically handles opengraph-image.tsx files
+  // so we do not declare them explicitly in the openGraph.images array here anymore
+  // to avoid duplication and conflicts.
 
   return {
     title: article.frontmatter.title,
@@ -63,14 +62,6 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       description: article.frontmatter.description,
       type: 'article',
       url,
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: article.frontmatter.title,
-        },
-      ],
       publishedTime: article.frontmatter.date,
       tags: article.frontmatter.tags,
     },
@@ -78,7 +69,6 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       card: 'summary_large_image',
       title: article.frontmatter.title,
       description: article.frontmatter.description,
-      images: [ogImage],
     },
     alternates: {
       canonical: url,
@@ -88,9 +78,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const [article, adjacent, allArticles] = await Promise.all([
+  const [article, allArticles] = await Promise.all([
     getArticleBySlug(slug),
-    getAdjacentArticles(slug),
     getAllArticles()
   ]);
 
@@ -150,12 +139,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* Hero Image */}
       {image && (
-        <div className="mb-12 overflow-hidden rounded-2xl bg-muted aspect-video md:aspect-[2/1]">
-          {/* Using img to avoid external domain restrictions */}
+        <div className="mb-12 overflow-hidden rounded-2xl bg-muted aspect-video md:aspect-[2/1] relative">
           <img
             src={image}
             alt={title}
             className="h-full w-full object-cover"
+            loading="eager"
+            decoding="async"
           />
         </div>
       )}
