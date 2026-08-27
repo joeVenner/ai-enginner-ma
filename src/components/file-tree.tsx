@@ -87,13 +87,15 @@ export function FileTreeExplorer({ files = [], defaultFile }: FileTreeProps) {
 
   const toggleFolder = (path: number[]) => {
     const newData = [...treeData];
-    let current: any = { children: newData };
-    
+    let current: FileNode | { children: FileNode[] } = { children: newData };
+
     for (const index of path) {
-      current = current.children[index];
+      if ('children' in current && current.children) {
+        current = current.children[index];
+      }
     }
-    
-    if (current.type === 'folder') {
+
+    if ('type' in current && current.type === 'folder') {
       current.isOpen = !current.isOpen;
       setTreeData(newData);
     }
