@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, FileText, Layout, Sun, Moon, Laptop, ArrowRight } from 'lucide-react';
+import { Search, FileText, Layout, Sun, Moon, Laptop, ArrowRight, Mic, MicOff } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 interface SearchResult {
@@ -18,8 +18,55 @@ export function CommandPalette() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const router = useRouter();
   const { setTheme } = useTheme();
+
+  // Initialize speech recognition if supported
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setSpeechSupported(true);
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event: any) => {
+          const current = event.resultIndex;
+          const transcript = event.results[current][0].transcript;
+          setQuery(transcript);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (!speechSupported || !recognitionRef.current) return;
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setQuery(''); // Clear previous query before listening
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
 
   // Toggle palette with cmd+k or ctrl+k
   useEffect(() => {
@@ -129,11 +176,24 @@ export function CommandPalette() {
           <Search className="mr-3 h-5 w-5 text-muted-foreground" />
           <input
             className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-sm"
-            placeholder="Search articles, commands, or change theme..."
+            placeholder={isListening ? "Listening..." : "Search articles, commands, or change theme..."}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
           />
+          {speechSupported && (
+            <button
+              onClick={toggleListening}
+              className={`mr-2 flex h-6 w-6 items-center justify-center rounded-md transition-colors ${
+                isListening
+                  ? 'bg-red-500/20 text-red-500 animate-pulse'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+              }`}
+              title={isListening ? "Stop listening" : "Voice Search"}
+            >
+              {isListening ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+            </button>
+          )}
           <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
             <span className="text-xs">ESC</span>
           </kbd>
