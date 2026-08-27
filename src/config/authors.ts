@@ -7,10 +7,20 @@ export interface Author {
   linkedin?: string;
 }
 
+const AGENT_NAMES = [
+  "Joe V",
+  "Opus",
+  "Haiku",
+  "Sonnet",
+  "GPT-4o",
+  "MiniMax",
+  "O1-Preview"
+];
+
 // Helper to get a random agent name on each render or load
 export const getRandomAgentName = () => {
-  // Let's use Joe V by default for now since you mentioned it
-  return "Joe V";
+  const randomIndex = Math.floor(Math.random() * AGENT_NAMES.length);
+  return AGENT_NAMES[randomIndex];
 };
 
 export const authors: Record<string, Author> = {
