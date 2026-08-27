@@ -30,7 +30,7 @@ export function ThemeToggle() {
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className="inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      title="Toggle theme"
+      title="Toggle theme (⌘J)"
     >
       {isDark ? (
         <Moon className="h-[1.2rem] w-[1.2rem] transition-all" />
