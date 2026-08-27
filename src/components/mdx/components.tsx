@@ -16,6 +16,7 @@ import { Card, CardGrid } from './card';
 import { Mermaid } from './mermaid';
 import { FileTree, TreeFolder, TreeFile } from './file-tree';
 import { Timeline, TimelineItem } from './timeline';
+import { Badge } from './badge';
 import { CodeBlockWrapper } from '../code-block-wrapper';
 import { HTMLAttributes } from 'react';
 
@@ -58,5 +59,6 @@ export const mdxComponents = {
   TreeFile,
   Timeline,
   TimelineItem,
+  Badge,
   CodeBlockWrapper,
 };
