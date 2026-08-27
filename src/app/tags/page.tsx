@@ -1,49 +1,49 @@
 import { getAllTags, getAllArticles } from '@/lib/content';
 import Link from 'next/link';
 import { Metadata } from 'next';
+import { Tag } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Tags',
-  description: 'Browse articles by tag.',
+  description: 'Browse all article tags',
 };
 
-export default async function TagsIndexPage() {
+export default async function TagsPage() {
   const tags = await getAllTags();
-  const articles = await getAllArticles();
+  const allArticles = await getAllArticles();
 
-  // Count articles per tag and calculate reading time
-  const tagStats = tags.map(tag => {
-    const tagArticles = articles.filter(a => a.frontmatter.tags?.includes(tag));
-    const count = tagArticles.length;
-    const totalReadingTime = tagArticles.reduce((acc, article) => acc + article.readingTime, 0);
-    return { name: tag, count, totalReadingTime };
-  }).sort((a, b) => b.count - a.count);
+  // Calculate tag counts
+  const tagCounts = tags.map(tag => {
+    const count = allArticles.filter(
+      article => article.frontmatter.tags?.some(t => t.toLowerCase() === tag.toLowerCase())
+    ).length;
+
+    return { name: tag, count };
+  }).sort((a, b) => b.count - a.count); // Sort by count descending
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 sm:px-6">
-      <div className="mb-12 border-b pb-8">
-        <h1 className="mb-4 text-4xl font-bold tracking-tight">Tags</h1>
-        <p className="text-xl text-muted-foreground">
-          Browse our articles across specific tags.
+    <div className="container mx-auto max-w-6xl px-4 py-12 sm:px-6 md:py-16">
+      <div className="mb-12 text-center">
+        <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-5xl">Tags</h1>
+        <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+          Browse articles by topic.
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        {tagStats.map(({ name, count, totalReadingTime }) => (
+      <div className="mx-auto max-w-4xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {tagCounts.map((tag) => (
           <Link
-            key={name}
-            href={`/tags/${name.toLowerCase()}`}
-            className="group flex flex-col items-center gap-1 rounded-xl border bg-card px-4 py-3 transition-all hover:border-primary hover:shadow-sm"
-            title={`~${totalReadingTime} mins of reading`}
+            key={tag.name}
+            href={`/tags/${tag.name.toLowerCase()}`}
+            className="group flex flex-col items-center justify-center p-8 text-center rounded-2xl border bg-card hover:border-primary transition-all hover:shadow-md"
           >
-            <div className="flex items-center gap-2">
-              <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-                #{name}
-              </span>
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-                {count}
-              </span>
+            <div className="mb-4 rounded-full bg-primary/10 p-3 text-primary group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+              <Tag className="h-6 w-6" />
             </div>
+            <h2 className="text-xl font-bold mb-2">#{tag.name}</h2>
+            <p className="text-sm text-muted-foreground font-medium">
+              {tag.count} {tag.count === 1 ? 'Article' : 'Articles'}
+            </p>
           </Link>
         ))}
       </div>

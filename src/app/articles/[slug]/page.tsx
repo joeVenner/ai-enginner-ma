@@ -173,9 +173,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {/* Tags */}
             <div className="flex flex-wrap gap-2">
               {tags && tags.map(tag => (
-                <span key={tag} className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
-                  #{tag}
-                </span>
+                <Link key={tag} href={`/tags/${tag.toLowerCase()}`}>
+                  <span className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                    #{tag}
+                  </span>
+                </Link>
               ))}
             </div>
             
