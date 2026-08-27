@@ -4,7 +4,6 @@ import { Calendar, ArrowRight, Tag } from 'lucide-react';
 import { BookmarkButton } from './bookmark-button';
 import { ReadTimeBadge } from './read-time-badge';
 import type { Article } from '@/lib/content';
-import Balancer from 'react-wrap-balancer';
 
 interface ArticleCardProps {
   article: Article;
@@ -37,9 +36,9 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
             </div>
           </div>
 
-          <h2 className="mb-4 text-2xl md:text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary">
+          <h2 className="mb-4 text-2xl md:text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary [text-wrap:balance]">
             <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
-              <Balancer>{title}</Balancer>
+              {title}
             </Link>
           </h2>
 
@@ -99,9 +98,9 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
         </div>
 
         <div className="group relative w-full mb-4 flex-1">
-          <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors">
+          <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors [text-wrap:balance]">
             <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
-              <Balancer>{title}</Balancer>
+              {title}
             </Link>
           </h3>
           <p className="line-clamp-2 text-sm text-muted-foreground">
