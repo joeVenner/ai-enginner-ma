@@ -116,8 +116,8 @@ export function Header() {
         
         <div className="flex flex-1 items-center justify-end space-x-1 sm:space-x-2 flex-shrink-0">
           <nav className="flex items-center space-x-1">
-            <Link
-              href="/search"
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
               className="inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label="Search"
             >
@@ -126,8 +126,8 @@ export function Header() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
               </span>
               <kbd className="ml-2 hidden rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:inline-block">⌘K</kbd>
-            </Link>
-            
+            </button>
+
             <TooltipProvider delayDuration={100}>
               <div className="hidden sm:flex items-center space-x-1">
                 <Tooltip>

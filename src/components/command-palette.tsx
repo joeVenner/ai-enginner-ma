@@ -3,14 +3,41 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Command } from 'cmdk';
-import { Search, Folder, Tag, Moon, Sun, BookMarked, Monitor, History } from 'lucide-react';
+import { Search, Folder, Tag, Moon, Sun, BookMarked, Monitor, History, FileText } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { siteConfig } from '@/config/site';
 
+interface ArticleSearchItem {
+  slug: string;
+  title: string;
+  description: string;
+  category?: string;
+}
+
 export function CommandPalette() {
   const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState('');
+  const [articles, setArticles] = React.useState<ArticleSearchItem[]>([]);
+  const [loading, setLoading] = React.useState(false);
   const router = useRouter();
   const { setTheme, theme } = useTheme();
+
+  // Fetch articles once when opened for the first time
+  React.useEffect(() => {
+    if (open && articles.length === 0 && !loading) {
+      setLoading(true);
+      fetch('/api/search')
+        .then(res => res.json())
+        .then(data => {
+          setArticles(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Failed to fetch articles for command palette", err);
+          setLoading(false);
+        });
+    }
+  }, [open, articles.length, loading]);
 
   // Toggle the menu when ⌘K is pressed
   React.useEffect(() => {
@@ -23,6 +50,13 @@ export function CommandPalette() {
 
     document.addEventListener('keydown', down);
     return () => document.removeEventListener('keydown', down);
+  }, []);
+
+  // Listen for custom event to open the command palette
+  React.useEffect(() => {
+    const handleOpen = () => setOpen(true);
+    window.addEventListener('open-command-palette', handleOpen);
+    return () => window.removeEventListener('open-command-palette', handleOpen);
   }, []);
 
   const runCommand = React.useCallback(
@@ -43,13 +77,39 @@ export function CommandPalette() {
       >
         <div className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
           <Command.Input
-            placeholder="Type a command or search..."
+            placeholder="Type a command or search articles..."
+            value={query}
+            onValueChange={setQuery}
             className="flex h-14 w-full border-b border-border bg-transparent px-4 text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
           <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2">
             <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
-              No results found.
+              {loading ? 'Loading...' : 'No results found.'}
             </Command.Empty>
+
+            {/* If there's a query and we have articles, show article results at the top */}
+            {query.length > 0 && articles.length > 0 && (
+              <Command.Group heading="Articles" className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
+                {articles.map((article) => (
+                  <Command.Item
+                    key={article.slug}
+                    value={article.title + ' ' + (article.description || '')}
+                    onSelect={() => runCommand(() => router.push(`/articles/${article.slug}`))}
+                    className="flex cursor-pointer flex-col items-start justify-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
+                  >
+                    <div className="flex w-full items-center">
+                      <FileText className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
+                      <span className="font-medium truncate">{article.title}</span>
+                      {article.category && (
+                        <span className="ml-auto ml-2 shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
+                          {article.category}
+                        </span>
+                      )}
+                    </div>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            )}
 
             <Command.Group heading="Navigation" className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
               <Command.Item
@@ -57,7 +117,7 @@ export function CommandPalette() {
                 className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
               >
                 <Search className="mr-2 h-4 w-4" />
-                Search Articles...
+                Advanced Search...
               </Command.Item>
               <Command.Item
                 onSelect={() => runCommand(() => router.push('/saved'))}

@@ -21,6 +21,7 @@ import { ViewCount } from '@/components/view-count';
 import { HistoryTracker } from '@/components/history-tracker';
 import { Comments } from "@/components/comments";
 import { ArticleSchema } from '@/components/schema-org';
+import { ReadAloud } from '@/components/read-aloud';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
@@ -56,10 +57,6 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   }
 
   const url = `${siteConfig.url}/articles/${article.slug}`;
-
-  // Next.js app router automatically handles opengraph-image.tsx files
-  // so we do not declare them explicitly in the openGraph.images array here anymore
-  // to avoid duplication and conflicts.
 
   return {
     title: article.frontmatter.title,
@@ -125,14 +122,17 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* Article Header */}
       <header className="mb-12">
-        {category && (
-          <Link
-            href={`/categories/${category.toLowerCase()}`}
-            className="mb-6 inline-block rounded-full bg-primary/10 px-3 py-1 font-medium text-primary hover:bg-primary/20 transition-colors"
-          >
-            {category}
-          </Link>
-        )}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          {category && (
+            <Link
+              href={`/categories/${category.toLowerCase()}`}
+              className="inline-block rounded-full bg-primary/10 px-3 py-1 font-medium text-primary hover:bg-primary/20 transition-colors"
+            >
+              {category}
+            </Link>
+          )}
+          <ReadAloud title={title} className="ml-auto sm:ml-0" />
+        </div>
 
         <h1 className="mb-6 text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl text-foreground">
           {title}
