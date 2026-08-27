@@ -3,6 +3,7 @@ import { CodeBlock } from './code-block';
 import { ZoomImage } from './zoom-image';
 import { GlossaryTerm } from '../glossary-term';
 import { FileTreeExplorer } from '../file-tree';
+import { ImageGallery, type GalleryImage } from '../image-gallery';
 import Link from 'next/link';
 
 interface MDXProps {
@@ -50,12 +51,17 @@ const EntityLink = ({ id, name, ...props }: EntityLinkProps) => {
   );
 };
 
+const Gallery = ({ images, className }: { images: GalleryImage[], className?: string }) => {
+  return <ImageGallery images={images} className={className} />;
+};
+
 export const mdxComponents = {
   Axiom,
   Callout,
   EntityLink,
   GlossaryTerm,
   FileTreeExplorer,
+  Gallery,
 
   // Enhanced pre/code blocks with copy/download buttons and syntax highlighting
   pre: ({ children, ...props }: MDXProps) => {
