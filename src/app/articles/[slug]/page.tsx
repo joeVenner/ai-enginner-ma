@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getArticleBySlug, getAllArticles } from '@/lib/content';
+import { getArticleBySlug, getAllArticles, getAdjacentArticles } from '@/lib/content';
 import { format, parseISO } from 'date-fns';
 import { Calendar, Clock, User, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -11,6 +11,7 @@ import { EditOnGithub } from '@/components/edit-on-github';
 
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
+import { ArticleNav } from '@/components/article-nav';
 import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
@@ -79,9 +80,10 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
-  const [article, allArticles] = await Promise.all([
+  const [article, allArticles, adjacentArticles] = await Promise.all([
     getArticleBySlug(slug),
-    getAllArticles()
+    getAllArticles(),
+    getAdjacentArticles(slug)
   ]);
 
   if (!article) {
@@ -207,6 +209,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div className="mt-8 mb-12">
             <ArticleFeedback />
           </div>
+
+          {/* Previous / Next Article Navigation */}
+          <ArticleNav prevArticle={adjacentArticles.prev} nextArticle={adjacentArticles.next} />
 
           {/* Author Bio */}
           <AuthorBio authorName={author || 'Editor'} />
