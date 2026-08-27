@@ -22,6 +22,7 @@ import { Comments } from "@/components/comments";
 import { ArticleSchema } from '@/components/schema-org';
 import { ReadAloud } from '@/components/read-aloud';
 import { AiSummary } from '@/components/ai-summary';
+import { FocusModeToggle } from '@/components/focus-mode-toggle';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
@@ -131,7 +132,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               {category}
             </Link>
           )}
-          <ReadAloud title={title} className="ml-auto sm:ml-0" />
+          <div className="flex items-center gap-3 ml-auto sm:ml-0">
+            <FocusModeToggle />
+            <ReadAloud title={title} />
+          </div>
         </div>
 
         <h1 className="mb-6 text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl text-foreground">
@@ -175,7 +179,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16 relative">
 
         {/* Sticky Social Share (Desktop Left) */}
-        <aside className="hidden xl:flex flex-col items-center gap-4 sticky top-32 h-fit pt-4">
+        <aside className="hidden xl:flex flex-col items-center gap-4 sticky top-32 h-fit pt-4 transition-opacity duration-300 focus-hide">
           <div className="flex flex-col items-center gap-4 rounded-full border border-border/50 bg-card p-3 shadow-sm">
             <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Share</span>
             <div className="h-px w-8 bg-border"></div>
@@ -188,8 +192,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          <MobileToc content={article.content} />
+        <div className="flex-1 min-w-0 transition-all duration-500 ease-in-out focus-center">
+          <MobileToc content={article.content} className="focus-hide" />
 
           {/* Series Outline */}
           <ArticleSeries currentArticle={article} allArticles={allArticles} />
@@ -249,7 +253,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </div>
 
         {/* Sidebar */}
-        <aside className="hidden lg:block lg:w-64 flex-shrink-0">
+        <aside className="hidden lg:block lg:w-64 flex-shrink-0 transition-opacity duration-300 focus-hide">
           <TableOfContents content={article.content} />
         </aside>
       </div>
