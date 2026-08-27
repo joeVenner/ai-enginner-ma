@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { Check, Copy, Download, Play, Terminal } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 
 interface CodeBlockProps extends React.HTMLAttributes<HTMLPreElement> {
@@ -15,6 +16,13 @@ export function CodeBlock({ children }: CodeBlockProps) {
   const [viewMode, setViewMode] = useState<'code' | 'preview'>('code');
   const [output, setOutput] = useState<string[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
+
+  // Handle hydration mismatch for theme
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Extract raw text content from the children tree for the copy button
   const extractText = (node: React.ReactNode): string => {
@@ -107,29 +115,40 @@ export function CodeBlock({ children }: CodeBlockProps) {
   };
 
   const isRunnable = ['js', 'javascript', 'ts', 'typescript'].includes(language.toLowerCase());
+  const isLight = mounted && resolvedTheme === 'light';
 
   return (
-    <div className="relative group my-6 overflow-hidden rounded-xl border border-border bg-[#282c34]">
+    <div className={cn(
+      "relative group my-6 overflow-hidden rounded-xl border border-border",
+      isLight ? "bg-[#fafafa]" : "bg-[#282c34]"
+    )}>
       {/* Code Block Header (Tabs + Actions container) */}
-      <div className="flex items-center justify-between bg-black/40 px-3 py-2 border-b border-white/10 text-xs text-muted-foreground transition-colors group-hover:bg-black/50">
+      <div className={cn(
+        "flex items-center justify-between px-3 py-2 border-b text-xs transition-colors",
+        isLight ? "bg-black/5 border-black/10 text-zinc-600 group-hover:bg-black/10" : "bg-black/40 border-white/10 text-muted-foreground group-hover:bg-black/50"
+      )}>
         <div className="flex items-center gap-1">
           {/* Tabs */}
           <button
             onClick={() => setViewMode('code')}
             className={cn(
               "px-3 py-1.5 rounded-md font-medium transition-colors",
-              viewMode === 'code' ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
+              viewMode === 'code'
+                ? (isLight ? "bg-black/10 text-black" : "bg-white/10 text-white")
+                : (isLight ? "text-zinc-600 hover:text-black hover:bg-black/5" : "text-white/60 hover:text-white hover:bg-white/5")
             )}
           >
             {language ? language.toUpperCase() : 'TEXT'}
           </button>
-          
+
           {isRunnable && (
             <button
               onClick={() => setViewMode('preview')}
               className={cn(
                 "px-3 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5",
-                viewMode === 'preview' ? "bg-white/10 text-white" : "text-white/60 hover:text-white hover:bg-white/5"
+                viewMode === 'preview'
+                  ? (isLight ? "bg-black/10 text-black" : "bg-white/10 text-white")
+                  : (isLight ? "text-zinc-600 hover:text-black hover:bg-black/5" : "text-white/60 hover:text-white hover:bg-white/5")
               )}
             >
               <Terminal className="h-3 w-3" />
@@ -137,12 +156,15 @@ export function CodeBlock({ children }: CodeBlockProps) {
             </button>
           )}
         </div>
-        
+
         <div className="flex items-center gap-1">
           {isRunnable && viewMode === 'code' && (
             <button
               onClick={handleRunCode}
-              className="flex h-7 px-3 items-center justify-center gap-1.5 rounded-md bg-green-500/20 text-green-400 transition-all hover:bg-green-500/30 focus-visible:outline-none mr-2 font-medium"
+              className={cn(
+                "flex h-7 px-3 items-center justify-center gap-1.5 rounded-md transition-all focus-visible:outline-none mr-2 font-medium",
+                isLight ? "bg-green-600/10 text-green-600 hover:bg-green-600/20" : "bg-green-500/20 text-green-400 hover:bg-green-500/30"
+              )}
               aria-label="Run code"
               title="Run code"
             >
@@ -152,7 +174,10 @@ export function CodeBlock({ children }: CodeBlockProps) {
           )}
           <button
             onClick={handleDownload}
-            className="flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all hover:bg-white/10 text-white/70 hover:text-white focus-visible:outline-none"
+            className={cn(
+              "flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all focus-visible:outline-none",
+              isLight ? "hover:bg-black/10 text-zinc-500 hover:text-black" : "hover:bg-white/10 text-white/70 hover:text-white"
+            )}
             aria-label="Download code"
             title="Download code"
           >
@@ -160,12 +185,15 @@ export function CodeBlock({ children }: CodeBlockProps) {
           </button>
           <button
             onClick={handleCopy}
-            className="flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all hover:bg-white/10 text-white/70 hover:text-white focus-visible:outline-none"
+            className={cn(
+              "flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all focus-visible:outline-none",
+              isLight ? "hover:bg-black/10 text-zinc-500 hover:text-black" : "hover:bg-white/10 text-white/70 hover:text-white"
+            )}
             aria-label="Copy code"
             title="Copy code"
           >
             {copied ? (
-              <Check className="h-3.5 w-3.5 text-green-400" />
+              <Check className="h-3.5 w-3.5 text-green-500" />
             ) : (
               <Copy className="h-3.5 w-3.5" />
             )}
@@ -178,7 +206,7 @@ export function CodeBlock({ children }: CodeBlockProps) {
         {viewMode === 'code' ? (
           <SyntaxHighlighter
             language={language || 'text'}
-            style={oneDark}
+            style={isLight ? oneLight : oneDark}
             customStyle={{
               margin: 0,
               padding: '1.25rem',
@@ -192,7 +220,10 @@ export function CodeBlock({ children }: CodeBlockProps) {
             {codeString}
           </SyntaxHighlighter>
         ) : (
-          <div className="p-5 font-mono text-sm min-h-[150px] bg-[#1e1e1e] text-zinc-300">
+          <div className={cn(
+            "p-5 font-mono text-sm min-h-[150px]",
+            isLight ? "bg-[#f5f5f5] text-zinc-800" : "bg-[#1e1e1e] text-zinc-300"
+          )}>
             {isRunning ? (
               <div className="flex items-center gap-3 text-zinc-500 animate-pulse">
                 <span className="flex h-2 w-2 rounded-full bg-green-500"></span>
@@ -203,9 +234,9 @@ export function CodeBlock({ children }: CodeBlockProps) {
                 {output.map((line, i) => (
                   <div key={i} className={cn(
                     "flex items-start gap-3",
-                    line.startsWith('Error:') ? 'text-red-400' : 'text-zinc-300'
+                    line.startsWith('Error:') ? 'text-red-500' : (isLight ? 'text-zinc-800' : 'text-zinc-300')
                   )}>
-                    <span className="text-zinc-600 select-none">&gt;</span>
+                    <span className="text-zinc-500 select-none">&gt;</span>
                     <span className="whitespace-pre-wrap font-mono">{line}</span>
                   </div>
                 ))}
