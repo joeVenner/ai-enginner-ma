@@ -9,6 +9,7 @@ import { Table, TableHeader, TableRow, TableHead, TableCell } from './table';
 import { Blockquote } from './blockquote';
 import { Axiom } from './axiom';
 import { EntityLink } from './entity-link';
+import { Steps } from './steps';
 import { HTMLAttributes } from 'react';
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement>;
@@ -38,4 +39,5 @@ export const mdxComponents = {
   blockquote: Blockquote,
   Axiom,
   EntityLink,
+  Steps,
 };
