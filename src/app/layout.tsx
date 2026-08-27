@@ -5,7 +5,8 @@ import 'katex/dist/katex.min.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { BackToTop } from '@/components/back-to-top';
+import { BackToTop } from "@/components/back-to-top";
+import { PageTransition } from "@/components/page-transition";
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { CommandPalette } from '@/components/command-palette';
 import TopLoader from '@/components/top-loader';
@@ -75,7 +76,7 @@ export default function RootLayout({
           <CommandPalette />
           <div className="flex min-h-screen flex-col">
             <Header />
-            <main className="flex-1">{children}</main>
+            <PageTransition>{children}</PageTransition>
             <Footer />
             <BackToTop />
           </div>
