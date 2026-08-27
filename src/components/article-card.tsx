@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
-import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
+import { Calendar, ArrowRight, Tag } from 'lucide-react';
 import { BookmarkButton } from './bookmark-button';
+import { ReadTimeBadge } from './read-time-badge';
 import Image from 'next/image';
 import type { Article } from '@/lib/content';
 import Balancer from 'react-wrap-balancer';
@@ -48,10 +49,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
                 <Calendar className="h-3 w-3" />
                 <time dateTime={date}>{format(parseISO(date), 'MMMM d, yyyy')}</time>
               </div>
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                <span>{article.readingTime} min read</span>
-              </div>
+              <ReadTimeBadge minutes={article.readingTime} />
               <div className="z-10 relative ml-auto">
                 <BookmarkButton slug={article.slug} />
               </div>
@@ -100,7 +98,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
         <div className="flex items-center gap-3">
           <time dateTime={date}>{format(parseISO(date), 'MMM d, yyyy')}</time>
           <span className="hidden sm:inline-block">•</span>
-          <span className="hidden sm:inline-block">{article.readingTime} min read</span>
+          <ReadTimeBadge minutes={article.readingTime} />
         </div>
 
         <div className="flex items-center gap-2">

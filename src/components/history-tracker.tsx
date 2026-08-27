@@ -3,14 +3,18 @@
 import { useEffect } from 'react';
 import { useReadingHistory } from '@/hooks/use-reading-history';
 
-export function HistoryTracker({ slug }: { slug: string }) {
+interface HistoryTrackerProps {
+  slug: string;
+}
+
+export function HistoryTracker({ slug }: HistoryTrackerProps) {
   const { addToHistory } = useReadingHistory();
 
   useEffect(() => {
-    // Slight delay to ensure it's a real read, not just a bounce
+    // Add to history after a short delay to ensure it's a real read
     const timer = setTimeout(() => {
       addToHistory(slug);
-    }, 2000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, [slug, addToHistory]);
