@@ -13,6 +13,7 @@ import { Steps } from './steps';
 import { Accordion, AccordionItem } from './accordion';
 import { Card, CardGrid } from './card';
 import { Mermaid } from './mermaid';
+import { FileTree, TreeFolder, TreeFile } from './file-tree';
 import { CodeBlockWrapper } from '../code-block-wrapper';
 import { HTMLAttributes } from 'react';
 
@@ -49,5 +50,8 @@ export const mdxComponents = {
   Card,
   CardGrid,
   Mermaid,
+  FileTree,
+  TreeFolder,
+  TreeFile,
   CodeBlockWrapper,
 };
