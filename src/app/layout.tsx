@@ -12,7 +12,6 @@ import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { CommandPalette } from '@/components/command-palette';
 import TopLoader from '@/components/top-loader';
 import { siteConfig } from '@/config/site';
-import { GoogleTagManager } from '@next/third-parties/google';
 import { WebSiteSchema } from '@/components/schema-org';
 import { SmoothScroll } from '@/components/smooth-scroll';
 
@@ -92,7 +91,6 @@ export default function RootLayout({
           </div>
         </ThemeProvider>
         <Analytics />
-        {/* <GoogleTagManager gtmId="GTM-XXXXXXX" /> */}
       </body>
     </html>
   );

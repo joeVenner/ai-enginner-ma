@@ -10,7 +10,7 @@ interface BlockquoteNode extends Node {
   children: Array<{
     type: string;
     value?: string;
-    children?: any[];
+    children?: unknown[];
   }>;
 }
 
@@ -23,7 +23,7 @@ export function remarkAdmonition() {
         
         // Blockquotes usually contain a paragraph first
         if (firstChild.type === 'paragraph' && firstChild.children && firstChild.children.length > 0) {
-          const textNode = firstChild.children[0];
+          const textNode = firstChild.children[0] as { type: string; value?: string };
           
           if (textNode.type === 'text' && textNode.value) {
             const text = textNode.value;
@@ -48,11 +48,11 @@ export function remarkAdmonition() {
               }
               
               // Convert blockquote to Callout component
-              // @ts-ignore - hacking the AST to render our React component
+              // @ts-expect-error - Hacking the AST to render our React component requires adding non-standard properties
               node.type = 'mdxJsxFlowElement';
-              // @ts-ignore
+              // @ts-expect-error - Hacking the AST to render our React component requires adding non-standard properties
               node.name = 'Callout';
-              // @ts-ignore
+              // @ts-expect-error - Hacking the AST to render our React component requires adding non-standard properties
               node.attributes = [
                 {
                   type: 'mdxJsxAttribute',
