@@ -1,33 +1,28 @@
 import Link from 'next/link';
-import { AnchorHTMLAttributes } from 'react';
 import { ExternalLink } from 'lucide-react';
+import React from 'react';
 
-export function CustomLink({ href, children, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) {
-  if (!href) {
-    return <a {...props}>{children}</a>;
-  }
+export function CustomLink(props: React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  const href = props.href;
+  const isInternalLink = href && (href.startsWith('/') || href.startsWith('#'));
 
-  const isInternal = href.startsWith('/') || href.startsWith('#');
-
-  if (isInternal) {
+  if (isInternalLink) {
     return (
-      <Link href={href} {...props}>
-        {children}
+      <Link href={href} {...props} className="font-medium text-primary underline underline-offset-4 hover:text-primary/80 transition-colors">
+        {props.children}
       </Link>
     );
   }
 
-  // External links
   return (
     <a
-      href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 group"
       {...props}
+      className="inline-flex items-center gap-1 font-medium text-primary underline underline-offset-4 hover:text-primary/80 transition-colors group"
     >
-      <span>{children}</span>
-      <ExternalLink className="h-3 w-3 opacity-70 group-hover:opacity-100 transition-opacity" />
+      {props.children}
+      <ExternalLink className="h-3 w-3 text-muted-foreground opacity-50 group-hover:opacity-100 transition-opacity" />
     </a>
   );
 }
