@@ -4,30 +4,24 @@ export function ArticleCardSkeleton({ featured = false }: { featured?: boolean }
   if (featured) {
     return (
       <div className="group relative overflow-hidden rounded-2xl border bg-card transition-all">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-          <div className="relative aspect-video w-full overflow-hidden md:aspect-auto md:h-full">
-            <Skeleton className="h-full w-full rounded-none" />
+        <div className="flex flex-col justify-center p-8 md:p-12">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <Skeleton className="h-6 w-20 rounded-full" />
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-24" />
           </div>
 
-          <div className="flex flex-col justify-center p-8 md:p-12">
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              <Skeleton className="h-6 w-20 rounded-full" />
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-24" />
-            </div>
+          <Skeleton className="mb-4 h-8 w-3/4" />
+          <Skeleton className="mb-2 h-4 w-full" />
+          <Skeleton className="mb-6 h-4 w-5/6" />
 
-            <Skeleton className="mb-4 h-8 w-3/4" />
-            <Skeleton className="mb-2 h-4 w-full" />
-            <Skeleton className="mb-6 h-4 w-5/6" />
-
-            <div className="mb-6 flex flex-wrap gap-2">
-              <Skeleton className="h-5 w-16" />
-              <Skeleton className="h-5 w-16" />
-              <Skeleton className="h-5 w-16" />
-            </div>
-
-            <Skeleton className="mt-auto h-5 w-28" />
+          <div className="mb-6 flex flex-wrap gap-2">
+            <Skeleton className="h-5 w-16" />
+            <Skeleton className="h-5 w-16" />
+            <Skeleton className="h-5 w-16" />
           </div>
+
+          <Skeleton className="mt-auto h-5 w-28" />
         </div>
       </div>
     );

@@ -81,7 +81,7 @@ export function ClapButton({ slug, className }: ClapButtonProps) {
   }
 
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex flex-col items-center justify-center gap-2", className)}>
       <TooltipProvider delayDuration={100}>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -89,22 +89,19 @@ export function ClapButton({ slug, className }: ClapButtonProps) {
               onClick={handleClap}
               disabled={claps >= MAX_CLAPS}
               className={cn(
-                "relative flex h-10 select-none items-center justify-center rounded-full px-4 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "relative flex h-16 w-16 select-none items-center justify-center rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring border border-border shadow-sm",
                 claps > 0
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+                  : "bg-background text-foreground hover:bg-secondary hover:text-secondary-foreground",
                 isAnimating && "scale-110",
                 claps >= MAX_CLAPS && "opacity-80 cursor-default hover:bg-primary"
               )}
             >
-              <ThumbsUp className={cn("mr-2 h-4 w-4", claps > 0 && "fill-primary-foreground/20")} />
-              <span className="text-sm font-medium">
-                {claps > 0 ? `${totalClaps}` : "Like"}
-              </span>
-
+              <ThumbsUp className={cn("h-6 w-6", claps > 0 && "fill-primary-foreground/20")} />
+              
               {/* Floating +1 animation */}
               {isAnimating && (
-                <span className="absolute -top-8 text-primary font-bold text-sm animate-out fade-out slide-out-to-top-4 duration-500">
+                <span className="absolute -top-8 text-primary font-bold text-lg animate-out fade-out slide-out-to-top-8 duration-500">
                   +{claps}
                 </span>
               )}
@@ -115,6 +112,7 @@ export function ClapButton({ slug, className }: ClapButtonProps) {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+      <span className="text-sm font-medium text-muted-foreground">{totalClaps} Likes</span>
     </div>
   );
 }
