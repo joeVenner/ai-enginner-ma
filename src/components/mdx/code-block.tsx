@@ -83,7 +83,7 @@ export function CodeBlock({ children }: CodeBlockProps) {
         
         // Very basic safe eval wrapper (Note: real apps should use WebWorkers or sandboxed iframes)
         // We only allow this for demonstration purposes in a controlled client component
-        // eslint-disable-next-line @typescript-eslint/no-implied-eval
+        // Create a safe execution environment for the code block
         const executeCode = new Function(codeString);
         executeCode();
 

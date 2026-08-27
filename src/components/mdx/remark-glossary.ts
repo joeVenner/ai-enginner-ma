@@ -21,15 +21,15 @@ export function remarkGlossary() {
     visit(tree, 'text', (node: Node, index: number | undefined, parent: ParentNode | undefined) => {
       // Don't modify text inside links, code blocks, or headings to prevent rendering bugs
       if (
-        !parent || 
+        !parent ||
         ['link', 'code', 'inlineCode', 'heading', 'GlossaryTerm'].includes(parent.type) ||
         !('value' in node) ||
-        typeof (node as any).value !== 'string'
+        typeof (node as Record<string, unknown>).value !== 'string'
       ) {
         return;
       }
 
-      const text = (node as any).value as string;
+      const text = (node as Record<string, unknown>).value as string;
       const matches = Array.from(text.matchAll(termRegex));
 
       if (matches.length === 0) return;
