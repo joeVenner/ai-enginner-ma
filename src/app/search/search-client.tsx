@@ -74,9 +74,14 @@ export function SearchClient({ initialArticles }: { initialArticles: Article[] }
           </div>
         ) : filteredArticles.length > 0 ? (
           <div className="space-y-10">
-            <h2 className="text-lg font-medium text-muted-foreground">
-              Found {filteredArticles.length} result{filteredArticles.length === 1 ? '' : 's'}
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-medium text-muted-foreground">
+                Found {filteredArticles.length} result{filteredArticles.length === 1 ? '' : 's'}
+              </h2>
+              <span className="text-sm text-muted-foreground/80">
+                ~{filteredArticles.reduce((acc, article) => acc + article.readingTime, 0)} mins total reading time
+              </span>
+            </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {filteredArticles.map((article) => (
                 <ArticleCard key={article.slug} article={article} />
