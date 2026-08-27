@@ -12,6 +12,8 @@ import { EntityLink } from './entity-link';
 import { Steps } from './steps';
 import { Accordion, AccordionItem } from './accordion';
 import { Card, CardGrid } from './card';
+import { Mermaid } from './mermaid';
+import { CodeBlockWrapper } from '../code-block-wrapper';
 import { HTMLAttributes } from 'react';
 
 type HeadingProps = HTMLAttributes<HTMLHeadingElement>;
@@ -46,4 +48,6 @@ export const mdxComponents = {
   AccordionItem,
   Card,
   CardGrid,
+  Mermaid,
+  CodeBlockWrapper,
 };
