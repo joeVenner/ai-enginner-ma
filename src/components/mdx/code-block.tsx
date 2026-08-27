@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Check, Copy, Download } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
@@ -10,7 +9,7 @@ interface CodeBlockProps extends React.HTMLAttributes<HTMLPreElement> {
   children?: React.ReactNode;
 }
 
-export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
+export function CodeBlock({ children }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   // Extract raw text content from the children tree for the copy button

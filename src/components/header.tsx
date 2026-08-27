@@ -10,6 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { MobileNav } from '@/components/mobile-nav';
 import { HighContrastToggle } from '@/components/high-contrast-toggle';
 import { TextSizeAdjust } from '@/components/text-size-adjust';
+import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 
 export function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -127,6 +128,10 @@ export function Header() {
               </span>
               <kbd className="ml-2 hidden rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:inline-block">⌘K</kbd>
             </button>
+
+            <div className="hidden lg:flex items-center space-x-1">
+              <KeyboardShortcuts />
+            </div>
 
             <TooltipProvider delayDuration={100}>
               <div className="hidden sm:flex items-center space-x-1">

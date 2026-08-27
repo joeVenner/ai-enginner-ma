@@ -14,7 +14,6 @@ import { BookmarkButton } from '@/components/bookmark-button';
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ArticleNav } from '@/components/article-nav';
-import { ReadingProgress } from '@/components/reading-progress';
 import { EstimatedRead } from '@/components/estimated-read';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
@@ -108,7 +107,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           image
         }}
       />
-      <ReadingProgress />
       <EstimatedRead readingTime={article.readingTime} />
       
       {/* Back button */}
