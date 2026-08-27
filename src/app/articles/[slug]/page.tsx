@@ -13,6 +13,7 @@ import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
+import { ViewCount } from '@/components/view-count';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
@@ -142,6 +143,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <Clock className="h-4 w-4" />
             <span>{article.readingTime} min read</span>
           </div>
+          <ViewCount slug={article.slug} />
         </div>
       </header>
 
