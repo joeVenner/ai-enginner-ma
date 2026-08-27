@@ -14,6 +14,7 @@ import { RelatedArticles } from '@/components/related-articles';
 import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
+import { ArticleFeedback } from '@/components/article-feedback';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
@@ -197,6 +198,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               {/* Social Share */}
               <ShareButtons title={title} slug={article.slug} />
             </div>
+          </div>
+
+          {/* Article Feedback */}
+          <div className="mt-8 mb-12">
+            <ArticleFeedback />
           </div>
 
           {/* Author Bio */}
