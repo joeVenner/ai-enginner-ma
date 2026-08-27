@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { format, parseISO } from 'date-fns';
 import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
+import { BookmarkButton } from './bookmark-button';
+import Image from 'next/image';
 import type { Article } from '@/lib/content';
 
 interface ArticleCardProps {
@@ -18,7 +20,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           {image ? (
             <div className="relative aspect-video w-full overflow-hidden md:aspect-auto md:h-full">
               {/* Using standard img to avoid Next.js image domain config for local dynamic images */}
-              <img
+              <Image fill
                 src={image}
                 alt={title}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -48,6 +50,9 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 <span>{article.readingTime} min read</span>
+              </div>
+              <div className="z-10 relative ml-auto">
+                <BookmarkButton slug={article.slug} />
               </div>
             </div>
 
@@ -97,14 +102,19 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           <span className="hidden sm:inline-block">{article.readingTime} min read</span>
         </div>
 
-        {category && (
-          <Link
-            href={`/categories/${category.toLowerCase()}`}
-            className="z-10 relative rounded-full bg-secondary px-2.5 py-0.5 font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
-          >
-            {category}
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          {category && (
+            <Link
+              href={`/categories/${category.toLowerCase()}`}
+              className="z-10 relative rounded-full bg-secondary px-2.5 py-0.5 font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+            >
+              {category}
+            </Link>
+          )}
+          <div className="z-10 relative">
+            <BookmarkButton slug={article.slug} />
+          </div>
+        </div>
       </div>
 
       <div className="group relative w-full mb-4">
