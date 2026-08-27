@@ -151,17 +151,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       </header>
 
       {/* Hero Image */}
-      {image && (
-        <div className="mb-12 overflow-hidden rounded-2xl bg-muted aspect-video md:aspect-[2/1] relative">
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover"
-            loading="eager"
-            decoding="async"
-          />
-        </div>
-      )}
+      <div className="mb-12 overflow-hidden rounded-2xl bg-muted aspect-video md:aspect-[2/1] relative border border-border/50 shadow-sm">
+        <img
+          src={image || `/articles/${article.slug}/opengraph-image`}
+          alt={title}
+          className="h-full w-full object-cover"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
 
 
       {/* Article Content Layout */}

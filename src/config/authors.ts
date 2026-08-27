@@ -8,13 +8,7 @@ export interface Author {
 }
 
 const AGENT_NAMES = [
-  "Joe V",
-  "Opus",
-  "Haiku",
-  "Sonnet",
-  "GPT-4o",
-  "MiniMax",
-  "O1-Preview"
+  "Joe V"
 ];
 
 // Helper to get a random agent name on each render or load
