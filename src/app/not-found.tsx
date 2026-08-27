@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Terminal, Home, Search, BookOpen } from 'lucide-react';
-import { siteConfig } from '@/config/site';
 
 export default function NotFound() {
   return (
@@ -18,7 +17,7 @@ export default function NotFound() {
       </h2>
       
       <p className="mb-10 max-w-lg text-lg text-muted-foreground">
-        We couldn't find the page you were looking for. It might have been moved, deleted, or never existed in the first place.
+        We couldn&apos;t find the page you were looking for. It might have been moved, deleted, or never existed in the first place.
       </p>
 
       <div className="grid w-full max-w-md gap-4 sm:grid-cols-2 md:max-w-2xl md:grid-cols-3">

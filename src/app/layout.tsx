@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { BackToTop } from '@/components/back-to-top';
+import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { siteConfig } from '@/config/site';
 
 const inter = Inter({
@@ -64,6 +65,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <KeyboardShortcuts />
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>
