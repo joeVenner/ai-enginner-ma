@@ -8,7 +8,7 @@ import { siteConfig } from '@/config/site';
 import { TableOfContents } from '@/components/table-of-contents';
 import { ShareButtons } from '@/components/share-buttons';
 import { EditOnGithub } from '@/components/edit-on-github';
-import { ArticleNav } from '@/components/article-nav';
+
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ReadingProgress } from '@/components/reading-progress';
@@ -46,7 +46,11 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
   }
 
   const url = `${siteConfig.url}/articles/${article.slug}`;
-  const ogImage = article.frontmatter.image ? `${siteConfig.url}${article.frontmatter.image}` : `${siteConfig.url}${siteConfig.ogImage}`;
+
+  // Use explicit frontmatter image, OR fallback to dynamic OG image generation API
+  const ogImage = article.frontmatter.image
+    ? `${siteConfig.url}${article.frontmatter.image}`
+    : `${siteConfig.url}/api/og?title=${encodeURIComponent(article.frontmatter.title)}&category=${encodeURIComponent(article.frontmatter.category || 'Article')}`;
 
   return {
     title: article.frontmatter.title,
@@ -196,14 +200,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {/* Author Bio */}
           <AuthorBio authorName={author || 'Editor'} />
 
-          {/* Article Navigation */}
-          <ArticleNav prevArticle={adjacent.prev} nextArticle={adjacent.next} />
-          
-          {/* Newsletter */}
-          <Newsletter />
-          
           {/* Related Articles */}
           <RelatedArticles currentArticle={article} allArticles={allArticles} />
+
+          {/* Newsletter */}
+          <Newsletter />
         </div>
         
         {/* Sidebar */}

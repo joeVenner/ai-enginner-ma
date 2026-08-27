@@ -2,7 +2,7 @@
 title: "NVIDIA Acquires Hugging Face for $12.9 Billion: A Seismic Shift in AI Landscape"
 date: "2026-08-27"
 author: Editor
-category: Tech News
+category: "News"
 tags: ["NVIDIA", "Hugging Face", "AI", "Acquisition", "Tech News"]
 description: "NVIDIA announces its acquisition of the open-source AI platform Hugging Face for $12.9 billion, signaling a massive consolidation in the artificial intelligence sector."
 ---

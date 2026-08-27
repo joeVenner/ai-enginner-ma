@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 
-interface ZoomImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {}
+type ZoomImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
 export function ZoomImage({ src, alt, className, ...props }: ZoomImageProps) {
   const [isZoomed, setIsZoomed] = useState(false);

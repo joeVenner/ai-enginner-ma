@@ -1,0 +1,248 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  --background: oklch(0.99 0 0); /* white */
+  --foreground: oklch(0.14 0.05 285); /* near black with blue tint */
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.14 0.05 285);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.14 0.05 285);
+
+  --primary: oklch(0.2 0.05 285);
+  --primary-foreground: oklch(0.98 0 0);
+
+  --secondary: oklch(0.96 0.01 285);
+  --secondary-foreground: oklch(0.2 0.05 285);
+
+  --muted: oklch(0.96 0.01 285);
+  --muted-foreground: oklch(0.55 0.02 285);
+
+  --accent: oklch(0.96 0.01 285);
+  --accent-foreground: oklch(0.2 0.05 285);
+
+  --border: oklch(0.9 0.01 285);
+  --input: oklch(0.9 0.01 285);
+  --ring: oklch(0.2 0.05 285);
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: oklch(0.11 0.02 285); /* dark slate */
+  --foreground: oklch(0.95 0.01 285); /* off white */
+
+  --card: oklch(0.13 0.02 285);
+  --card-foreground: oklch(0.95 0.01 285);
+
+  --popover: oklch(0.13 0.02 285);
+  --popover-foreground: oklch(0.95 0.01 285);
+
+  --primary: oklch(0.98 0 0);
+  --primary-foreground: oklch(0.11 0.02 285);
+
+  --secondary: oklch(0.17 0.02 285);
+  --secondary-foreground: oklch(0.95 0.01 285);
+
+  --muted: oklch(0.17 0.02 285);
+  --muted-foreground: oklch(0.65 0.02 285);
+
+  --accent: oklch(0.17 0.02 285);
+  --accent-foreground: oklch(0.95 0.01 285);
+
+  --border: oklch(0.2 0.02 285);
+  --input: oklch(0.2 0.02 285);
+  --ring: oklch(0.8 0.02 285);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Highlight.js syntax highlighting - GitHub Light / Dark style */
+.hljs {
+  background: transparent;
+  color: #24292e;
+}
+.dark .hljs {
+  color: #c9d1d9;
+}
+.hljs-doctag, .hljs-keyword, .hljs-meta .hljs-keyword, .hljs-template-tag, .hljs-template-variable, .hljs-type, .hljs-variable.language_ {
+  color: #d73a49;
+}
+.dark .hljs-doctag, .dark .hljs-keyword, .dark .hljs-meta .hljs-keyword, .dark .hljs-template-tag, .dark .hljs-template-variable, .dark .hljs-type, .dark .hljs-variable.language_ {
+  color: #ff7b72;
+}
+.hljs-title, .hljs-title.class_, .hljs-title.class_.inherited__, .hljs-title.function_ {
+  color: #6f42c1;
+}
+.dark .hljs-title, .dark .hljs-title.class_, .dark .hljs-title.class_.inherited__, .dark .hljs-title.function_ {
+  color: #d2a8ff;
+}
+.hljs-attr, .hljs-attribute, .hljs-literal, .hljs-meta, .hljs-number, .hljs-operator, .hljs-variable, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id {
+  color: #005cc5;
+}
+.dark .hljs-attr, .dark .hljs-attribute, .dark .hljs-literal, .dark .hljs-meta, .dark .hljs-number, .dark .hljs-operator, .dark .hljs-variable, .dark .hljs-selector-attr, .dark .hljs-selector-class, .dark .hljs-selector-id {
+  color: #79c0ff;
+}
+.hljs-regexp, .hljs-string, .hljs-meta .hljs-string {
+  color: #032f62;
+}
+.dark .hljs-regexp, .dark .hljs-string, .dark .hljs-meta .hljs-string {
+  color: #a5d6ff;
+}
+.hljs-built_in, .hljs-symbol {
+  color: #e36209;
+}
+.dark .hljs-built_in, .dark .hljs-symbol {
+  color: #ffa657;
+}
+.hljs-comment, .hljs-code, .hljs-formula {
+  color: #6a737d;
+}
+.dark .hljs-comment, .dark .hljs-code, .dark .hljs-formula {
+  color: #8b949e;
+}
+.hljs-name, .hljs-quote, .hljs-selector-tag, .hljs-selector-pseudo {
+  color: #22863a;
+}
+.dark .hljs-name, .dark .hljs-quote, .dark .hljs-selector-tag, .dark .hljs-selector-pseudo {
+  color: #7ee787;
+}
+.hljs-subst {
+  color: #24292e;
+}
+.dark .hljs-subst {
+  color: #c9d1d9;
+}
+.hljs-section {
+  color: #005cc5;
+  font-weight: bold;
+}
+.dark .hljs-section {
+  color: #1f6feb;
+  font-weight: bold;
+}
+.hljs-bullet {
+  color: #735c0f;
+}
+.dark .hljs-bullet {
+  color: #f2cc60;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: bold;
+}
+.hljs-addition {
+  color: #22863a;
+  background-color: #f0fff4;
+}
+.dark .hljs-addition {
+  color: #aff5b4;
+  background-color: #033a16;
+}
+.hljs-deletion {
+  color: #b31d28;
+  background-color: #ffeef0;
+}
+.dark .hljs-deletion {
+  color: #ffdcd7;
+  background-color: #67060c;
+}
+/* KaTeX theme overrides for Dark Mode readability */
+.dark .katex {
+  color: var(--foreground);
+}
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1rem 0;
+}
+
+/* Fix code block styling */
+pre, .prose pre {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem !important;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+code {
+  font-family: var(--font-mono);
+}
+
+/* Ensure inline code isn't styled like a block */
+:not(pre) > code {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius-sm);
+  font-size: 0.875em;
+}
+
+pre code, .prose pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  white-space: pre !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  tab-size: 2 !important;
+  hyphens: none !important;
+}

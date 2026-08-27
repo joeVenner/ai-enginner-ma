@@ -16,32 +16,30 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-semibold">Navigate</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li>
-                <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
-              </li>
-              <li>
-                <Link href="/articles" className="hover:text-foreground transition-colors">All Articles</Link>
-              </li>
-              <li>
-                <Link href="/categories" className="hover:text-foreground transition-colors">Categories</Link>
-              </li>
-              <li>
-                <Link href="/tags" className="hover:text-foreground transition-colors">Tags</Link>
-              </li>
-              <li>
-                <Link href="/rss.xml" className="hover:text-foreground transition-colors">RSS Feed</Link>
-              </li>
+            <h3 className="mb-4 text-sm font-semibold">Categories</h3>
+            <ul className="space-y-3 text-sm text-muted-foreground grid grid-cols-2 gap-x-4">
+              {siteConfig.categories.map((category) => (
+                <li key={category}>
+                  <Link href={`/categories/${category.toLowerCase()}`} className="hover:text-foreground transition-colors">
+                    {category}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-semibold">Social</h3>
+            <h3 className="mb-4 text-sm font-semibold">Links</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <a href={siteConfig.links.twitter} target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors">
-                  Twitter
+                <Link href="/articles" className="hover:text-foreground transition-colors">All Articles</Link>
+              </li>
+              <li>
+                <Link href="/search" className="hover:text-foreground transition-colors">Search</Link>
+              </li>
+              <li>
+                <a href="/rss.xml" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors">
+                  RSS Feed
                 </a>
               </li>
               <li>
@@ -61,7 +59,7 @@ export function Footer() {
         <div className="mt-12 flex flex-col items-center justify-between border-t pt-8 text-sm text-muted-foreground md:flex-row">
           <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
           <p className="mt-4 md:mt-0">
-            Powered by Automated AI Content
+            Built for humans, by AI Agents.
           </p>
         </div>
       </div>
