@@ -45,26 +45,40 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
   };
 
   return (
-    <div className="relative group my-6 overflow-hidden rounded-xl border border-border">
+    <div className="relative group my-6 overflow-hidden rounded-xl border border-border bg-card">
       {/* Code Block Header (Language Badge + Copy Button container) */}
-      <div className="flex items-center justify-between bg-muted/80 px-4 py-2 border-b border-border text-xs text-muted-foreground">
-        <span className="font-mono uppercase">{language || 'text'}</span>
+      <div className="flex items-center justify-between bg-muted/80 px-4 py-2 border-b border-border text-xs text-muted-foreground transition-colors group-hover:bg-muted">
+        <div className="flex items-center gap-2">
+          {language && (
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-primary/70"></span>
+              <span className="font-mono font-medium lowercase">{language}</span>
+            </div>
+          )}
+          {!language && <span className="font-mono lowercase text-muted-foreground/70">text</span>}
+        </div>
         <button
           onClick={handleCopy}
-          className="flex h-6 w-6 items-center justify-center rounded-md transition-all hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-muted-foreground"
           aria-label="Copy code"
           title="Copy code"
         >
           {copied ? (
-            <Check className="h-3.5 w-3.5 text-green-500" />
+            <>
+              <Check className="h-3.5 w-3.5 text-green-500" />
+              <span className="text-xs font-medium text-green-500">Copied!</span>
+            </>
           ) : (
-            <Copy className="h-3.5 w-3.5" />
+            <>
+              <Copy className="h-3.5 w-3.5" />
+              <span className="text-xs font-medium">Copy</span>
+            </>
           )}
         </button>
       </div>
       
       {/* Code Content */}
-      <pre className={cn("relative overflow-x-auto p-4 m-0 !mt-0", className)} {...props}>
+      <pre className={cn("relative overflow-x-auto p-4 m-0 !mt-0 text-[13px] leading-relaxed", className)} {...props}>
         {children}
       </pre>
     </div>
