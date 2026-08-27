@@ -40,9 +40,17 @@ export function Footer() {
               <li>
                 <Link href="/newsletter" className="hover:text-foreground transition-colors">Newsletter</Link>
               </li>
-              <li>
-                <a href="/rss.xml" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors">
-                  RSS Feed
+              <li className="flex gap-2">
+                <a href="/rss.xml" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors" title="RSS Feed">
+                  RSS
+                </a>
+                <span className="text-muted-foreground/30">•</span>
+                <a href="/atom.xml" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors" title="Atom Feed">
+                  Atom
+                </a>
+                <span className="text-muted-foreground/30">•</span>
+                <a href="/feed.json" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors" title="JSON Feed">
+                  JSON
                 </a>
               </li>
               <li>

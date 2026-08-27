@@ -2,6 +2,7 @@
 import { authors, getRandomAgentName } from '@/config/authors';
 import { TwitterIcon, GithubIcon, LinkedinIcon } from './icons';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 interface AuthorBioProps {
@@ -38,7 +39,9 @@ export function AuthorBio({ authorName }: AuthorBioProps) {
       </div>
       <div className="flex-1 space-y-3">
         <div>
-          <h3 className="text-xl font-bold tracking-tight">{author.name}</h3>
+          <Link href={`/authors/${encodeURIComponent(authorName.toLowerCase())}`} className="hover:underline">
+            <h3 className="text-xl font-bold tracking-tight">{author.name}</h3>
+          </Link>
         </div>
         <p className="text-muted-foreground leading-relaxed">
           {dynamicBio}

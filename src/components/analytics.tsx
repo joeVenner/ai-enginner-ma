@@ -2,6 +2,7 @@
 
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, Suspense } from 'react';
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 
 function AnalyticsInner() {
   const pathname = usePathname();
@@ -9,12 +10,11 @@ function AnalyticsInner() {
 
   useEffect(() => {
     if (pathname && process.env.NODE_ENV === 'production') {
-      const url = pathname + searchParams.toString();
       // Optional: Add custom tracking logic here
     }
   }, [pathname, searchParams]);
 
-  return null;
+  return <VercelAnalytics />;
 }
 
 export function Analytics() {

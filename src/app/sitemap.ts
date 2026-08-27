@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getAllArticles, getAllCategories, getAllTags } from '@/lib/content';
 import { siteConfig } from '@/config/site';
+import { authors } from '@/config/authors';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articles = await getAllArticles();
@@ -27,6 +28,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.5,
+  }));
+
+  const authorUrls = Object.keys(authors).map((authorName) => ({
+    url: `${siteConfig.url}/authors/${encodeURIComponent(authorName.toLowerCase())}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
   }));
 
   const staticUrls = [
@@ -61,7 +69,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.5,
     },
+    {
+      url: `${siteConfig.url}/history`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.3,
+    },
+    {
+      url: `${siteConfig.url}/saved`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.3,
+    },
   ];
 
-  return [...staticUrls, ...articleUrls, ...categoryUrls, ...tagUrls];
+  return [...staticUrls, ...articleUrls, ...categoryUrls, ...tagUrls, ...authorUrls];
 }

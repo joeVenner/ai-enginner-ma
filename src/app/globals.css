@@ -94,6 +94,9 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   * {
     border-color: var(--border);
   }
@@ -264,4 +267,83 @@ pre code, .prose pre code {
 
 @theme {
   --animate-progress-indeterminate: progress-indeterminate 1.5s infinite linear;
+}
+
+/* Print optimizations */
+@media print {
+  /* Hide UI elements that aren't content */
+  header, footer, nav, aside, .sticky, button, iframe, .giscus, .newsletter-section {
+    display: none !important;
+  }
+  
+  /* Convert colors to high contrast B&W for printers */
+  body, .prose {
+    background-color: white !important;
+    color: black !important;
+  }
+  
+  /* Force expand content to fill page */
+  main, .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Avoid page breaks inside blocks that shouldn't be split */
+  pre, img, figure, table, blockquote {
+    page-break-inside: avoid;
+  }
+  
+  h1, h2, h3, h4 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+  
+  /* Style anchor links */
+  a {
+    text-decoration: underline;
+    color: black !important;
+  }
+  
+  /* Make sure code blocks don't get cut off on the right margin */
+  pre {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    border: 1px solid #ccc !important;
+  }
+}
+
+/* Markdown Headings Auto-link styles */
+.prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  position: relative;
+}
+
+.prose .anchor-link {
+  position: absolute;
+  left: -1.5em;
+  padding-right: 0.5em;
+  opacity: 0;
+  text-decoration: none !important;
+  color: var(--muted-foreground) !important;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* For mobile where hovering isn't possible, we show the hashtag subtly inline,
+   or just let them click the whole heading */
+@media (max-width: 768px) {
+  .prose .anchor-link {
+    position: static;
+    opacity: 0.5;
+    margin-left: 0.2em;
+  }
+}
+
+.prose h2:hover .anchor-link,
+.prose h3:hover .anchor-link,
+.prose h4:hover .anchor-link,
+.prose h5:hover .anchor-link,
+.prose h6:hover .anchor-link,
+.prose .anchor-link:focus {
+  opacity: 1;
 }

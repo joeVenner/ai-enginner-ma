@@ -7,6 +7,7 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { BackToTop } from "@/components/back-to-top";
 import { PageTransition } from "@/components/page-transition";
+import { Analytics } from "@/components/analytics";
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { CommandPalette } from '@/components/command-palette';
 import TopLoader from '@/components/top-loader';
@@ -52,6 +53,13 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     creator: siteConfig.author.twitter,
   },
+  alternates: {
+    types: {
+      'application/rss+xml': `${siteConfig.url}/rss.xml`,
+      'application/json': `${siteConfig.url}/feed.json`,
+      'application/atom+xml': `${siteConfig.url}/atom.xml`,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -81,7 +89,8 @@ export default function RootLayout({
             <BackToTop />
           </div>
         </ThemeProvider>
-        <GoogleTagManager gtmId="GTM-XXXXXXX" />
+        <Analytics />
+        {/* <GoogleTagManager gtmId="GTM-XXXXXXX" /> */}
       </body>
     </html>
   );

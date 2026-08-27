@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Share, MessageSquare, Link2, Check } from 'lucide-react';
+import { Share, MessageSquare, Link2, Check, MessageCircle } from 'lucide-react';
 import { siteConfig } from '@/config/site';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 
@@ -48,6 +48,21 @@ export function ShareButtons({ title, slug }: ShareButtonsProps) {
       <span className="mr-2 text-sm font-medium text-muted-foreground">Share:</span>
       
       <TooltipProvider delayDuration={100}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <a
+              href="#comments-section"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span className="sr-only">Jump to comments</span>
+            </a>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Jump to comments</p>
+          </TooltipContent>
+        </Tooltip>
+
         <Tooltip>
           <TooltipTrigger asChild>
             <a

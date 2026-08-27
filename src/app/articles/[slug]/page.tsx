@@ -7,16 +7,17 @@ import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import { TableOfContents } from '@/components/table-of-contents';
 import { MobileToc } from '@/components/mobile-toc';
+import { ArticleSeries } from '@/components/article-series';
+import { ArticleFooterActions } from '@/components/article-footer-actions';
 import { ShareButtons } from '@/components/share-buttons';
-import { EditOnGithub } from '@/components/edit-on-github';
-
+import { BookmarkButton } from '@/components/bookmark-button';
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ArticleNav } from '@/components/article-nav';
 import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
-import { ArticleFeedback } from "@/components/article-feedback";
+import { HistoryTracker } from '@/components/history-tracker';
 import { Comments } from "@/components/comments";
 import { ArticleSchema } from '@/components/schema-org';
 import { MDXRemote } from 'next-mdx-remote/rsc';
@@ -25,6 +26,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeHighlight from 'rehype-highlight';
 
 interface ArticlePageProps {
@@ -96,6 +98,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
+      <HistoryTracker slug={slug} />
       <ArticleSchema
         article={{
           title,
@@ -136,10 +139,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </p>
 
         <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
+          <Link href={`/authors/${encodeURIComponent((author || 'Editor').toLowerCase())}`} className="flex items-center gap-2 hover:text-primary transition-colors">
             <User className="h-4 w-4" />
-            <span className="font-medium text-foreground">{author}</span>
-          </div>
+            <span className="font-medium text-foreground hover:text-primary transition-colors">{author}</span>
+          </Link>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <time dateTime={date}>{format(parseISO(date), 'MMMM d, yyyy')}</time>
@@ -165,68 +168,77 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
 
       {/* Article Content Layout */}
-      <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16">
+      <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16 relative">
+
+        {/* Sticky Social Share (Desktop Left) */}
+        <aside className="hidden xl:flex flex-col items-center gap-4 sticky top-32 h-fit pt-4">
+          <div className="flex flex-col items-center gap-4 rounded-full border border-border/50 bg-card p-3 shadow-sm">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Share</span>
+            <div className="h-px w-8 bg-border"></div>
+            <div className="flex flex-col gap-3 [&>div>span]:hidden [&>div]:flex-col [&>div]:gap-3">
+              <ShareButtons title={title} slug={article.slug} />
+            </div>
+            <div className="h-px w-8 bg-border"></div>
+            <BookmarkButton slug={article.slug} />
+          </div>
+        </aside>
 
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           <MobileToc content={article.content} />
 
+          {/* Series Outline */}
+          <ArticleSeries currentArticle={article} allArticles={allArticles} />
+
           <div className="prose prose-zinc dark:prose-invert prose-lg md:prose-xl max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-xl">
-            <MDXRemote 
-              source={article.content} 
+            <MDXRemote
+              source={article.content}
               components={mdxComponents}
               options={{
                 mdxOptions: {
                   remarkPlugins: [remarkGfm, remarkMath],
-                  rehypePlugins: [rehypeSlug, rehypeKatex, rehypeHighlight],
+                  rehypePlugins: [
+                    rehypeSlug,
+                    [rehypeAutolinkHeadings, {
+                      behavior: 'append',
+                      properties: {
+                        className: ['anchor-link'],
+                        ariaHidden: true,
+                        tabIndex: -1,
+                      },
+                      content: {
+                        type: 'element',
+                        tagName: 'span',
+                        properties: { className: ['icon', 'icon-link'] },
+                        children: [{ type: 'text', value: ' #' }]
+                      }
+                    }],
+                    rehypeKatex,
+                    rehypeHighlight
+                  ],
                 }
               }}
             />
           </div>
 
-          <div className="mt-16 flex items-center justify-between border-t pt-8">
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              {tags && tags.map(tag => (
-                <Link key={tag} href={`/tags/${tag.toLowerCase()}`}>
-                  <span className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors">
-                    #{tag}
-                  </span>
-                </Link>
-              ))}
-            </div>
-            
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-              {/* Edit on GitHub */}
-              <EditOnGithub slug={article.slug} />
-              
-              <div className="hidden sm:block h-4 w-px bg-border"></div>
-
-              {/* Social Share */}
-              <ShareButtons title={title} slug={article.slug} />
-            </div>
-          </div>
-
-          {/* Article Feedback */}
-          <div className="mt-8 mb-12">
-            <ArticleFeedback />
-          </div>
-
-          {/* Previous / Next Article Navigation */}
-          <ArticleNav prevArticle={adjacentArticles.prev} nextArticle={adjacentArticles.next} />
+          <ArticleFooterActions title={title} slug={article.slug} tags={tags} />
 
           {/* Author Bio */}
           <AuthorBio authorName={author || 'Editor'} />
 
-          {/* Related Articles */}
-          <RelatedArticles currentArticle={article} allArticles={allArticles} />
-
-          <Comments />
-
           {/* Newsletter */}
           <Newsletter />
+
+          {/* Previous / Next Article Navigation */}
+          <ArticleNav prevArticle={adjacentArticles.prev} nextArticle={adjacentArticles.next} />
+
+          {/* Comments */}
+          <Comments />
+
+          {/* Related Articles */}
+          <RelatedArticles currentArticle={article} allArticles={allArticles} />
         </div>
-        
+
         {/* Sidebar */}
         <aside className="hidden lg:block lg:w-64 flex-shrink-0">
           <TableOfContents content={article.content} />

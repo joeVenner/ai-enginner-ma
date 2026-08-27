@@ -12,6 +12,9 @@ export interface ArticleFrontmatter {
   image?: string;
   featured?: boolean;
   draft?: boolean;
+  series?: string;
+  seriesOrder?: number;
+  readingTimeOverride?: number;
 }
 
 export interface Article {
@@ -58,6 +61,9 @@ function validateFrontmatter(data: Record<string, unknown>, slug: string): Artic
     image: (data.image as string) || undefined,
     featured: !!data.featured,
     draft: !!data.draft,
+    series: (data.series as string) || undefined,
+    seriesOrder: typeof data.seriesOrder === 'number' ? data.seriesOrder : undefined,
+    readingTimeOverride: typeof data.readingTimeOverride === 'number' ? data.readingTimeOverride : undefined,
   };
 }
 
@@ -83,11 +89,14 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
 
     const frontmatter = validateFrontmatter(data, realSlug);
 
+    // Remove leading H1 if it exists at the start of the file to prevent title duplication
+    const cleanContent = content.replace(/^\s*#\s+[^\n]+\n+/, '');
+
     const article: Article = {
       slug: realSlug,
       frontmatter,
-      content,
-      readingTime: calculateReadingTime(content),
+      content: cleanContent,
+      readingTime: frontmatter.readingTimeOverride || calculateReadingTime(cleanContent),
     };
 
     return article;

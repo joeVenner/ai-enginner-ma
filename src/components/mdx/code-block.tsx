@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CodeBlockProps extends React.HTMLAttributes<HTMLPreElement> {
@@ -32,6 +32,19 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
     }
   }
 
+  const handleDownload = () => {
+    const textToDownload = extractText(children);
+    const blob = new Blob([textToDownload], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `snippet.${language || 'txt'}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleCopy = async () => {
     const textToCopy = extractText(children);
     
@@ -57,26 +70,37 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
           )}
           {!language && <span className="font-mono lowercase text-muted-foreground/70">text</span>}
         </div>
-        <button
-          onClick={handleCopy}
-          className="flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-muted-foreground"
-          aria-label="Copy code"
-          title="Copy code"
-        >
-          {copied ? (
-            <>
-              <Check className="h-3.5 w-3.5 text-green-500" />
-              <span className="text-xs font-medium text-green-500">Copied!</span>
-            </>
-          ) : (
-            <>
-              <Copy className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">Copy</span>
-            </>
-          )}
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleDownload}
+            className="flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-muted-foreground"
+            aria-label="Download code"
+            title="Download code"
+          >
+            <Download className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline-block text-xs font-medium">Download</span>
+          </button>
+          <button
+            onClick={handleCopy}
+            className="flex h-7 px-2 items-center justify-center gap-1.5 rounded-md transition-all hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-muted-foreground"
+            aria-label="Copy code"
+            title="Copy code"
+          >
+            {copied ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-green-500" />
+                <span className="text-xs font-medium text-green-500">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" />
+                <span className="text-xs font-medium">Copy</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
-      
+
       {/* Code Content */}
       <pre className={cn("relative overflow-x-auto p-4 m-0 !mt-0 text-[13px] leading-relaxed", className)} {...props}>
         {children}

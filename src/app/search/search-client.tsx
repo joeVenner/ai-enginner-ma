@@ -1,13 +1,37 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Search as SearchIcon } from 'lucide-react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { Search as SearchIcon, X } from 'lucide-react';
 import { ArticleCard } from '@/components/article-card';
+import { useDebounce } from '@/hooks/use-debounce';
 import type { Article } from '@/lib/content';
 
 export function SearchClient({ initialArticles }: { initialArticles: Article[] }) {
-  const [query, setQuery] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Initialize query from URL if it exists
+  const initialQuery = searchParams.get('q') || '';
+  const [query, setQuery] = useState(initialQuery);
+
+  // Debounce the query to prevent lag on every keystroke
+  const debouncedQuery = useDebounce(query, 300);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync debounced query to URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedQuery) {
+      params.set('q', debouncedQuery);
+    } else {
+      params.delete('q');
+    }
+
+    // Use replace to avoid filling history with every keystroke
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [debouncedQuery, pathname, router, searchParams]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -22,9 +46,9 @@ export function SearchClient({ initialArticles }: { initialArticles: Article[] }
   }, []);
 
   const filteredArticles = useMemo(() => {
-    if (!query.trim()) return [];
+    if (!debouncedQuery.trim()) return [];
 
-    const lowerQuery = query.toLowerCase();
+    const lowerQuery = debouncedQuery.toLowerCase();
 
     return initialArticles.filter((article) => {
       const { title, description, category, tags } = article.frontmatter;
@@ -38,7 +62,7 @@ export function SearchClient({ initialArticles }: { initialArticles: Article[] }
         content.toLowerCase().includes(lowerQuery)
       );
     });
-  }, [query, initialArticles]);
+  }, [debouncedQuery, initialArticles]);
 
   return (
     <div className="container mx-auto max-w-4xl px-4 py-12 sm:px-6 md:py-16">
@@ -52,13 +76,23 @@ export function SearchClient({ initialArticles }: { initialArticles: Article[] }
           <input
             ref={inputRef}
             type="text"
-            className="block w-full rounded-xl border border-input bg-card p-4 pl-10 pr-16 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-lg"
+            className="block w-full rounded-xl border border-input bg-card p-4 pl-10 pr-24 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-lg"
             placeholder="Search articles, topics, keywords..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             autoFocus
           />
-          <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
+
+          <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center gap-2">
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                className="pointer-events-auto rounded-full bg-muted/80 p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
             <kbd className="hidden rounded border border-border bg-muted px-2 py-0.5 font-mono text-[10px] font-medium text-muted-foreground sm:inline-block">
               ⌘K
             </kbd>
@@ -67,7 +101,7 @@ export function SearchClient({ initialArticles }: { initialArticles: Article[] }
       </div>
 
       <div>
-        {query.trim() === '' ? (
+        {debouncedQuery.trim() === '' ? (
           <div className="flex h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 text-muted-foreground">
             <SearchIcon className="mb-2 h-8 w-8 opacity-50" />
             <p>Start typing to search across all articles</p>
@@ -91,7 +125,7 @@ export function SearchClient({ initialArticles }: { initialArticles: Article[] }
         ) : (
           <div className="flex h-40 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 text-muted-foreground">
             <p className="mb-2 text-lg font-medium">No results found</p>
-            <p>We couldn&apos;t find anything matching &quot;{query}&quot;</p>
+            <p>We couldn&apos;t find anything matching &quot;{debouncedQuery}&quot;</p>
           </div>
         )}
       </div>

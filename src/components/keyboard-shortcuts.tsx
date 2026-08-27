@@ -18,12 +18,6 @@ export function KeyboardShortcuts() {
         return;
       }
 
-      // Cmd+K or Ctrl+K for Search
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        router.push('/search');
-      }
-
       // Cmd+J or Ctrl+J for Theme Toggle
       if ((e.metaKey || e.ctrlKey) && e.key === 'j') {
         e.preventDefault();

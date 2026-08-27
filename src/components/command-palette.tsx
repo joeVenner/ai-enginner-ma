@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { Command } from 'cmdk';
-import { Search, Folder, Tag, Moon, Sun, BookMarked, Monitor } from 'lucide-react';
+import { Search, Folder, Tag, Moon, Sun, BookMarked, Monitor, History } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { siteConfig } from '@/config/site';
 
@@ -65,6 +65,13 @@ export function CommandPalette() {
               >
                 <BookMarked className="mr-2 h-4 w-4" />
                 Saved Articles
+              </Command.Item>
+              <Command.Item
+                onSelect={() => runCommand(() => router.push('/history'))}
+                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
+              >
+                <History className="mr-2 h-4 w-4" />
+                Reading History
               </Command.Item>
               <Command.Item
                 onSelect={() => runCommand(() => router.push('/tags'))}

@@ -15,7 +15,7 @@ export function Comments() {
   if (!mounted) return null;
 
   return (
-    <div className="mt-16 border-t border-border pt-10">
+    <div id="comments-section" className="mt-16 border-t border-border pt-10">
       <h2 className="mb-8 text-2xl font-bold tracking-tight">Comments</h2>
       <Giscus
         id="comments"
