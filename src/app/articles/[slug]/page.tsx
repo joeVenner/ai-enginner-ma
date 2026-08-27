@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import { TableOfContents } from '@/components/table-of-contents';
 import { ShareButtons } from '@/components/share-buttons';
+import { EditOnGithub } from '@/components/edit-on-github';
 import { ArticleNav } from '@/components/article-nav';
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
@@ -165,8 +166,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               ))}
             </div>
             
-            {/* Social Share */}
-            <ShareButtons title={title} slug={article.slug} />
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              {/* Edit on GitHub */}
+              <EditOnGithub slug={article.slug} />
+              
+              <div className="hidden sm:block h-4 w-px bg-border"></div>
+
+              {/* Social Share */}
+              <ShareButtons title={title} slug={article.slug} />
+            </div>
           </div>
 
           {/* Author Bio */}
