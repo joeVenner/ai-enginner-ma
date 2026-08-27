@@ -1,10 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { marked } from 'marked';
-import { markedHighlight } from 'marked-highlight';
-import hljs from 'highlight.js';
-import markedKatex from 'marked-katex-extension';
 
 export interface ArticleFrontmatter {
   title: string;
@@ -22,7 +18,6 @@ export interface Article {
   slug: string;
   frontmatter: ArticleFrontmatter;
   content: string; // Original markdown
-  html?: string;   // Parsed HTML
   readingTime: number;
 }
 
@@ -43,45 +38,6 @@ function ensureDirectoryExists() {
     fs.mkdirSync(contentDirectory, { recursive: true });
   }
 }
-
-
-marked.use(markedKatex({
-  throwOnError: false,
-  displayMode: true
-}));
-
-// Setup marked with syntax highlighting and automatic heading IDs
-marked.use(
-  markedHighlight({
-    emptyLangClass: 'hljs',
-    langPrefix: 'hljs language-',
-    highlight(code, lang) {
-      const language = hljs.getLanguage(lang) ? lang : 'plaintext';
-      return hljs.highlight(code, { language }).value;
-    }
-  })
-);
-
-// Add heading IDs for table of contents
-const renderer = new marked.Renderer();
-renderer.heading = function (args: any) {
-  const t = typeof args.text === 'string' ? args.text : String(args.text);
-  const depth = args.depth || 2;
-
-  // Extract just the plain text for the ID (strip HTML tags that marked might have added)
-  const plainText = t.replace(/<[^>]*>?/gm, '');
-
-  const escapedText = plainText
-    .toLowerCase()
-    .replace(/[^\w]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-
-  return `
-          <h${depth} id="${escapedText}">
-            ${t}
-          </h${depth}>`;
-};
-marked.use({ renderer });
 
 // Default sensible fallback values
 const DEFAULT_AUTHOR = 'Editor';
@@ -108,7 +64,7 @@ function validateFrontmatter(data: Record<string, unknown>, slug: string): Artic
 /**
  * Gets a single article by its slug
  */
-export async function getArticleBySlug(slug: string, withHtml = false): Promise<Article | null> {
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
   try {
     ensureDirectoryExists();
 
@@ -134,13 +90,9 @@ export async function getArticleBySlug(slug: string, withHtml = false): Promise<
       readingTime: calculateReadingTime(content),
     };
 
-    if (withHtml) {
-      article.html = await marked.parse(content);
-    }
-
     return article;
   } catch (error) {
-    console.error(`Error reading article \${slug}:`, error);
+    console.error(`Error reading article ${slug}:`, error);
     return null;
   }
 }
@@ -155,14 +107,14 @@ export async function getAllArticles(): Promise<Article[]> {
     const fileNames = fs.readdirSync(contentDirectory);
 
     const articlesPromise = fileNames
-      .filter((fileName) => fileName.endsWith('.md'))
+      .filter((fileName) => fileName.endsWith('.md') || fileName.endsWith('.mdx'))
       .map(async (fileName) => {
-        const slug = fileName.replace(/\.md$/, '');
+        const slug = fileName.replace(/\.mdx?$/, '');
         const article = await getArticleBySlug(slug);
         return article;
       });
 
-const articles = (await Promise.all(articlesPromise))
+    const articles = (await Promise.all(articlesPromise))
       .filter((article): article is Article => article !== null)
       .filter((article) => process.env.NODE_ENV === 'development' || !article.frontmatter.draft);
 

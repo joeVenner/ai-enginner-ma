@@ -13,8 +13,13 @@ import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
-import { CodeBlockManager } from '@/components/copy-code-button';
-import { ImageZoomManager } from '@/components/image-zoom';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import { mdxComponents } from '@/components/mdx/components';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import rehypeSlug from 'rehype-slug';
+import rehypeHighlight from 'rehype-highlight';
 
 interface ArticlePageProps {
   params: {
@@ -78,7 +83,7 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { slug } = await params;
   const [article, adjacent, allArticles] = await Promise.all([
-    getArticleBySlug(slug, true),
+    getArticleBySlug(slug),
     getAdjacentArticles(slug),
     getAllArticles()
   ]);
@@ -92,8 +97,6 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
       <ReadingProgress />
-      <CodeBlockManager />
-      <ImageZoomManager />
       {/* Back button */}
       <Link
         href="/articles"
@@ -157,7 +160,16 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           <div className="prose prose-zinc dark:prose-invert prose-lg md:prose-xl max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-xl">
-            <div dangerouslySetInnerHTML={{ __html: article.html || '' }} />
+            <MDXRemote 
+              source={article.content} 
+              components={mdxComponents}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm, remarkMath],
+                  rehypePlugins: [rehypeSlug, rehypeKatex, rehypeHighlight],
+                }
+              }}
+            />
           </div>
 
           <div className="mt-16 flex items-center justify-between border-t pt-8">
@@ -196,7 +208,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         
         {/* Sidebar */}
         <aside className="hidden lg:block lg:w-64 flex-shrink-0">
-          <TableOfContents html={article.html || ''} />
+          <TableOfContents content={article.content} />
         </aside>
       </div>
     </article>
