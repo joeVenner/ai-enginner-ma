@@ -1,25 +1,63 @@
 export interface Author {
   name: string;
-  handle: string;
   avatar: string;
   bio: string;
   twitter?: string;
   github?: string;
+  linkedin?: string;
 }
 
+const mosaabAgents = [
+  "Agent Alpha",
+  "Agent Nexus",
+  "Agent Cipher",
+  "Agent Zenith",
+  "Agent Orion",
+  "Agent Nova",
+  "Agent Atlas",
+  "Joe V"
+];
+
+// Helper to get a random agent name on each render or load
+export const getRandomAgentName = () => {
+  // Let's use Joe V by default for now since you mentioned it
+  return "Joe V";
+};
+
 export const authors: Record<string, Author> = {
+  'Mosaab Yassir Lafrimi': {
+    name: 'Mosaab Yassir Lafrimi',
+    avatar: '/images/mosaab-headshot.jpg',
+    bio: `Published by Mosaab's Agent Joe V. This blog was crafted for humans by AI Agents.`,
+    github: 'https://github.com/joeVenner/ai-enginner-ma',
+    linkedin: 'https://www.linkedin.com/in/mosaab-yassir-lafrimi/',
+  },
+  'Joe V': {
+    name: 'Mosaab Yassir Lafrimi',
+    avatar: '/images/mosaab-headshot.jpg',
+    bio: `Published by Mosaab's Agent Joe V. This blog was crafted for humans by AI Agents.`,
+    github: 'https://github.com/joeVenner/ai-enginner-ma',
+    linkedin: 'https://www.linkedin.com/in/mosaab-yassir-lafrimi/',
+  },
   'Editor': {
-    name: 'Terminal Editor',
-    handle: 'editor',
-    avatar: 'https://ui-avatars.com/api/?name=Terminal+Editor&background=0D8ABC&color=fff',
-    bio: 'The editorial team at Terminal, covering the latest in AI, Data, and Software Engineering.',
-    twitter: 'https://twitter.com/terminal_pub',
+    name: 'Mosaab Yassir Lafrimi',
+    avatar: '/images/mosaab-headshot.jpg',
+    bio: `Published by Mosaab's Agent Joe V. This blog was crafted for humans by AI Agents.`,
+    github: 'https://github.com/joeVenner/ai-enginner-ma',
+    linkedin: 'https://www.linkedin.com/in/mosaab-yassir-lafrimi/',
+  },
+  'Joe': {
+    name: 'Mosaab Yassir Lafrimi',
+    avatar: '/images/mosaab-headshot.jpg',
+    bio: `Published by Mosaab's Agent Joe V. This blog was crafted for humans by AI Agents.`,
+    github: 'https://github.com/joeVenner/ai-enginner-ma',
+    linkedin: 'https://www.linkedin.com/in/mosaab-yassir-lafrimi/',
   },
   'Joe Venner': {
-    name: 'Joe Venner',
-    handle: 'joevenner',
-    avatar: 'https://ui-avatars.com/api/?name=Joe+Venner&background=2563eb&color=fff',
-    bio: 'Software Engineer and AI enthusiast. Building tools and writing about the intersection of AI and product development.',
-    github: 'https://github.com/joeVenner',
+    name: 'Mosaab Yassir Lafrimi',
+    avatar: '/images/mosaab-headshot.jpg',
+    bio: `Published by Mosaab's Agent Joe V. This blog was crafted for humans by AI Agents.`,
+    github: 'https://github.com/joeVenner/ai-enginner-ma',
+    linkedin: 'https://www.linkedin.com/in/mosaab-yassir-lafrimi/',
   }
 };
