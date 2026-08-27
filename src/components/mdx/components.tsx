@@ -1,6 +1,7 @@
 import React from 'react';
 import { CodeBlock } from './code-block';
 import { ZoomImage } from './zoom-image';
+import { GlossaryTerm } from '../glossary-term';
 import Link from 'next/link';
 
 interface MDXProps {
@@ -52,6 +53,7 @@ export const mdxComponents = {
   Axiom,
   Callout,
   EntityLink,
+  GlossaryTerm,
 
   // Enhanced pre/code blocks with copy/download buttons and syntax highlighting
   pre: ({ children, ...props }: MDXProps) => {
