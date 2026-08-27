@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { X } from 'lucide-react';
+import { X, ZoomIn } from 'lucide-react';
 
 type ZoomImageProps = React.ImgHTMLAttributes<HTMLImageElement>;
 
@@ -34,19 +34,29 @@ export function ZoomImage({ src, alt, className, ...props }: ZoomImageProps) {
 
   return (
     <>
-      {/* Thumbnail inline image */}
-      <img
-        src={src}
-        alt={alt || ''}
-        className={cn(
-          "cursor-zoom-in transition-transform duration-300 hover:scale-[1.02] rounded-xl my-8",
-          className
-        )}
-        onClick={() => setIsZoomed(true)}
-        loading="lazy"
-        decoding="async"
-        {...props}
-      />
+      {/* Thumbnail inline image container */}
+      <div 
+        className={cn("group relative my-8 overflow-hidden rounded-xl bg-muted border border-border/50 transition-all duration-300 hover:border-primary/30", className)}
+      >
+        <img
+          src={src}
+          alt={alt || ''}
+          className="cursor-zoom-in w-full object-cover transition-transform duration-500 hover:scale-[1.01]"
+          onClick={() => setIsZoomed(true)}
+          loading="lazy"
+          decoding="async"
+          {...props}
+        />
+        
+        {/* Hover overlay hint */}
+        <div 
+          className="absolute inset-0 bg-background/0 transition-colors duration-300 group-hover:bg-background/10 pointer-events-none flex items-center justify-center"
+        >
+          <div className="bg-background/80 backdrop-blur-sm p-3 rounded-full text-foreground opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-sm border border-border/50">
+            <ZoomIn className="w-5 h-5" />
+          </div>
+        </div>
+      </div>
 
       {/* Full screen overlay */}
       {isZoomed && (
@@ -69,19 +79,20 @@ export function ZoomImage({ src, alt, className, ...props }: ZoomImageProps) {
             <X className="h-5 w-5" />
           </button>
           
-          <img
-            src={src}
-            alt={alt || ''}
-            className="max-h-full max-w-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200"
-            loading="lazy"
-            decoding="async"
-          />
-          
-          {alt && (
-            <div className="absolute bottom-8 left-0 right-0 text-center text-sm font-medium text-muted-foreground px-4">
-              {alt}
-            </div>
-          )}
+          <div className="relative max-h-full max-w-full">
+            <img
+              src={src}
+              alt={alt || ''}
+              className="max-h-[85vh] max-w-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-200 border border-border/50"
+              loading="lazy"
+              decoding="async"
+            />
+            {alt && (
+              <div className="absolute -bottom-10 left-0 right-0 text-center text-sm font-medium text-muted-foreground px-4 truncate">
+                {alt}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </>
