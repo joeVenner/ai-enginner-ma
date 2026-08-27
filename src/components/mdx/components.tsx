@@ -1,5 +1,6 @@
 import React from 'react';
 import { CodeBlock } from './code-block';
+import { InlineCode } from './inline-code';
 import { ZoomImage } from './zoom-image';
 import { GlossaryTerm } from '../glossary-term';
 import { FileTreeExplorer } from '../file-tree';
@@ -66,6 +67,11 @@ export const mdxComponents = {
   // Enhanced pre/code blocks with copy/download buttons and syntax highlighting
   pre: ({ children, ...props }: MDXProps) => {
     return <CodeBlock {...props}>{children}</CodeBlock>;
+  },
+
+  // Interactive inline code snippets with Click-to-Copy
+  code: ({ children, className, ...props }: MDXProps & { className?: string }) => {
+    return <InlineCode className={className as string} {...props}>{children}</InlineCode>;
   },
 
   // Custom image component with medium-style zooming
