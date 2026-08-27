@@ -14,6 +14,7 @@ import TopLoader from '@/components/top-loader';
 import { siteConfig } from '@/config/site';
 import { WebSiteSchema } from '@/components/schema-org';
 import { SmoothScroll } from '@/components/smooth-scroll';
+import { NewsletterModal } from '@/components/newsletter-modal';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -88,6 +89,7 @@ export default function RootLayout({
             <PageTransition>{children}</PageTransition>
             <Footer />
             <BackToTop />
+            <NewsletterModal />
           </div>
         </ThemeProvider>
         <Analytics />

@@ -1,26 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import { Mail } from 'lucide-react';
 
 export function Newsletter() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Check if the script has already been added to avoid duplicates
-    const scriptId = 'kit-com-newsletter-script';
-    
-    if (!document.getElementById(scriptId) && containerRef.current) {
-      const script = document.createElement('script');
-      script.id = scriptId;
-      script.src = 'https://joe-118.kit.com/fca3aaa8e7/index.js';
-      script.async = true;
-      script.setAttribute('data-uid', 'fca3aaa8e7');
-      
-      containerRef.current.appendChild(script);
-    }
-  }, []);
-
   return (
     <div className="newsletter-section my-16 rounded-2xl border border-primary/20 bg-primary/5 p-8 sm:p-10">
       <div className="flex flex-col items-center text-center">
@@ -34,8 +16,15 @@ export function Newsletter() {
           Get weekly deep dives into AI, data engineering, and the future of software development delivered straight to your inbox.
         </p>
 
-        {/* Kit.com Script Container */}
-        <div className="w-full max-w-md min-h-[60px]" ref={containerRef}></div>
+        <button
+          onClick={() => {
+            const event = new CustomEvent('open-newsletter-modal');
+            window.dispatchEvent(event);
+          }}
+          className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          Subscribe Now
+        </button>
 
         <p className="mt-4 text-xs text-muted-foreground">
           No spam. Unsubscribe at any time.

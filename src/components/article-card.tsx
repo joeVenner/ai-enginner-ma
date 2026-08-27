@@ -3,7 +3,7 @@ import { format, parseISO } from 'date-fns';
 import { Calendar, ArrowRight, Tag } from 'lucide-react';
 import { BookmarkButton } from './bookmark-button';
 import { ReadTimeBadge } from './read-time-badge';
-import Image from 'next/image';
+import { ArticleImageClient } from './article-image-client';
 import type { Article } from '@/lib/content';
 import Balancer from 'react-wrap-balancer';
 
@@ -21,8 +21,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
           {image ? (
             <div className="relative aspect-video w-full overflow-hidden md:aspect-auto md:h-full">
-              {/* Using standard img to avoid Next.js image domain config for local dynamic images */}
-              <Image fill
+              <ArticleImageClient
                 src={image}
                 alt={title}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -30,8 +29,13 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
               />
             </div>
           ) : (
-            <div className="relative aspect-video w-full overflow-hidden bg-muted md:aspect-auto md:h-full flex items-center justify-center">
-              <span className="text-4xl font-mono text-muted-foreground opacity-20">AI ENGINEER</span>
+            <div className="relative aspect-video w-full overflow-hidden md:aspect-auto md:h-full">
+              <ArticleImageClient
+                src={`/articles/${article.slug}/opengraph-image`}
+                alt={title}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
             </div>
           )}
 
@@ -93,59 +97,71 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
   }
 
   return (
-    <article className="group relative flex flex-col items-start justify-between rounded-xl border bg-card p-6 transition-all hover:shadow-md">
-      <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-        <div className="flex items-center gap-3">
-          <time dateTime={date}>{format(parseISO(date), 'MMM d, yyyy')}</time>
-          <span className="hidden sm:inline-block">•</span>
-          <ReadTimeBadge minutes={article.readingTime} />
-        </div>
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border bg-card transition-all hover:shadow-md">
+      {/* Show the OG image if available for uniform card layout */}
+      <div className="relative aspect-video w-full overflow-hidden bg-muted">
+        <ArticleImageClient
+          src={image || `/articles/${article.slug}/opengraph-image`}
+          alt={title}
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+        />
+      </div>
 
-        <div className="flex items-center gap-2">
-          {category && (
-            <Link
-              href={`/categories/${category.toLowerCase()}`}
-              className="z-10 relative rounded-full bg-secondary px-2.5 py-0.5 font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
-            >
-              {category}
-            </Link>
-          )}
-          <div className="z-10 relative">
-            <BookmarkButton slug={article.slug} />
+      <div className="flex flex-1 flex-col p-6">
+        <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3">
+            <time dateTime={date}>{format(parseISO(date), 'MMM d, yyyy')}</time>
+            <span className="hidden sm:inline-block">•</span>
+            <ReadTimeBadge minutes={article.readingTime} />
+          </div>
+
+          <div className="flex items-center gap-2">
+            {category && (
+              <Link
+                href={`/categories/${category.toLowerCase()}`}
+                className="z-10 relative rounded-full bg-secondary px-2.5 py-0.5 font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
+              >
+                {category}
+              </Link>
+            )}
+            <div className="z-10 relative">
+              <BookmarkButton slug={article.slug} />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="group relative w-full mb-4">
-        <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors">
-          <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
-            <Balancer>{title}</Balancer>
-          </Link>
-        </h3>
-        <p className="line-clamp-2 text-sm text-muted-foreground">
-          {description}
-        </p>
-      </div>
-
-      {tags && tags.length > 0 && (
-        <div className="mt-auto pt-4 flex flex-wrap gap-2 z-10 relative border-t w-full border-border/50">
-          {tags.slice(0, 3).map(tag => (
-            <Link 
-              key={tag} 
-              href={`/tags/${tag.toLowerCase()}`}
-              className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <Tag className="h-3 w-3" />
-              {tag}
+        <div className="group relative w-full mb-4 flex-1">
+          <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors">
+            <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
+              <Balancer>{title}</Balancer>
             </Link>
-          ))}
-          {tags.length > 3 && (
-            <span className="inline-flex items-center text-xs text-muted-foreground">
-              +{tags.length - 3}
-            </span>
-          )}
+          </h3>
+          <p className="line-clamp-2 text-sm text-muted-foreground">
+            {description}
+          </p>
         </div>
-      )}
+
+        {tags && tags.length > 0 && (
+          <div className="mt-auto pt-4 flex flex-wrap gap-2 z-10 relative border-t w-full border-border/50">
+            {tags.slice(0, 3).map(tag => (
+              <Link 
+                key={tag} 
+                href={`/tags/${tag.toLowerCase()}`}
+                className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Tag className="h-3 w-3" />
+                {tag}
+              </Link>
+            ))}
+            {tags.length > 3 && (
+              <span className="inline-flex items-center text-xs text-muted-foreground">
+                +{tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </article>
   );
 }
