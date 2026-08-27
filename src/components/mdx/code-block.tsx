@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Check, Copy, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 interface CodeBlockProps extends React.HTMLAttributes<HTMLPreElement> {
   children?: React.ReactNode;
@@ -32,9 +34,10 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
     }
   }
 
+  const codeString = extractText(children);
+
   const handleDownload = () => {
-    const textToDownload = extractText(children);
-    const blob = new Blob([textToDownload], { type: 'text/plain' });
+    const blob = new Blob([codeString], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -46,10 +49,8 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
   };
 
   const handleCopy = async () => {
-    const textToCopy = extractText(children);
-    
     try {
-      await navigator.clipboard.writeText(textToCopy);
+      await navigator.clipboard.writeText(codeString);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -102,9 +103,20 @@ export function CodeBlock({ children, className, ...props }: CodeBlockProps) {
       </div>
 
       {/* Code Content */}
-      <pre className={cn("relative overflow-x-auto p-4 m-0 !mt-0 text-[13px] leading-relaxed", className)} {...props}>
-        {children}
-      </pre>
+      <SyntaxHighlighter
+        language={language || 'text'}
+        style={oneDark}
+        customStyle={{
+          margin: 0,
+          padding: '1rem',
+          fontSize: '13px',
+          background: 'transparent',
+        }}
+        wrapLines={true}
+        showLineNumbers={true}
+      >
+        {codeString}
+      </SyntaxHighlighter>
     </div>
   );
 }
