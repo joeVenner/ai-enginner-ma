@@ -8,6 +8,7 @@ import { GithubIcon } from './icons';
 import { useState, useRef, useEffect } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 import { MobileNav } from '@/components/mobile-nav';
+import { HighContrastToggle } from '@/components/high-contrast-toggle';
 
 export function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -165,6 +166,7 @@ export function Header() {
             </TooltipProvider>
             
             <ThemeToggle />
+            <HighContrastToggle />
           </nav>
         </div>
       </div>

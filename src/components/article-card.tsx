@@ -4,6 +4,7 @@ import { Calendar, Clock, ArrowRight, Tag } from 'lucide-react';
 import { BookmarkButton } from './bookmark-button';
 import Image from 'next/image';
 import type { Article } from '@/lib/content';
+import Balancer from 'react-wrap-balancer';
 
 interface ArticleCardProps {
   article: Article;
@@ -58,7 +59,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
 
             <h2 className="mb-4 text-2xl md:text-3xl font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-primary">
               <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
-                {title}
+                <Balancer>{title}</Balancer>
               </Link>
             </h2>
 
@@ -120,7 +121,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
       <div className="group relative w-full mb-4">
         <h3 className="mb-3 text-xl font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors">
           <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
-            {title}
+            <Balancer>{title}</Balancer>
           </Link>
         </h3>
         <p className="line-clamp-2 text-sm text-muted-foreground">
