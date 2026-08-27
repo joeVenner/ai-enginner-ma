@@ -11,10 +11,12 @@ export default async function CategoriesIndexPage() {
   const categories = await getAllCategories();
   const articles = await getAllArticles();
 
-  // Count articles per category
-  const categoryCounts = categories.map(category => {
-    const count = articles.filter(a => a.frontmatter.category === category).length;
-    return { name: category, count };
+  // Count articles per category and calculate total reading time
+  const categoryStats = categories.map(category => {
+    const categoryArticles = articles.filter(a => a.frontmatter.category === category);
+    const count = categoryArticles.length;
+    const totalReadingTime = categoryArticles.reduce((acc, article) => acc + article.readingTime, 0);
+    return { name: category, count, totalReadingTime };
   }).sort((a, b) => b.count - a.count);
 
   return (
@@ -27,7 +29,7 @@ export default async function CategoriesIndexPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {categoryCounts.map(({ name, count }) => (
+        {categoryStats.map(({ name, count, totalReadingTime }) => (
           <Link
             key={name}
             href={`/categories/${name.toLowerCase()}`}
@@ -36,9 +38,16 @@ export default async function CategoriesIndexPage() {
             <h2 className="mb-2 text-xl font-semibold tracking-tight text-foreground group-hover:text-primary transition-colors">
               {name}
             </h2>
-            <span className="text-sm font-medium text-muted-foreground">
-              {count} {count === 1 ? 'article' : 'articles'}
-            </span>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                {count} {count === 1 ? 'article' : 'articles'}
+              </span>
+              {count > 0 && (
+                <span className="text-xs text-muted-foreground/80">
+                  ~{totalReadingTime} min read
+                </span>
+              )}
+            </div>
           </Link>
         ))}
       </div>

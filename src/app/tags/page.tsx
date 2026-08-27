@@ -11,10 +11,12 @@ export default async function TagsIndexPage() {
   const tags = await getAllTags();
   const articles = await getAllArticles();
 
-  // Count articles per tag
-  const tagCounts = tags.map(tag => {
-    const count = articles.filter(a => a.frontmatter.tags?.includes(tag)).length;
-    return { name: tag, count };
+  // Count articles per tag and calculate reading time
+  const tagStats = tags.map(tag => {
+    const tagArticles = articles.filter(a => a.frontmatter.tags?.includes(tag));
+    const count = tagArticles.length;
+    const totalReadingTime = tagArticles.reduce((acc, article) => acc + article.readingTime, 0);
+    return { name: tag, count, totalReadingTime };
   }).sort((a, b) => b.count - a.count);
 
   return (
@@ -27,18 +29,21 @@ export default async function TagsIndexPage() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        {tagCounts.map(({ name, count }) => (
+        {tagStats.map(({ name, count, totalReadingTime }) => (
           <Link
             key={name}
             href={`/tags/${name.toLowerCase()}`}
-            className="group flex items-center gap-2 rounded-full border bg-card px-4 py-2 transition-all hover:border-primary hover:shadow-sm"
+            className="group flex flex-col items-center gap-1 rounded-xl border bg-card px-4 py-3 transition-all hover:border-primary hover:shadow-sm"
+            title={`~${totalReadingTime} mins of reading`}
           >
-            <span className="font-medium text-foreground group-hover:text-primary transition-colors">
-              #{name}
-            </span>
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
-              {count}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-foreground group-hover:text-primary transition-colors">
+                #{name}
+              </span>
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                {count}
+              </span>
+            </div>
           </Link>
         ))}
       </div>
