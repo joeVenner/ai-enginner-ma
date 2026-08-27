@@ -7,17 +7,6 @@ export interface Author {
   linkedin?: string;
 }
 
-const mosaabAgents = [
-  "Agent Alpha",
-  "Agent Nexus",
-  "Agent Cipher",
-  "Agent Zenith",
-  "Agent Orion",
-  "Agent Nova",
-  "Agent Atlas",
-  "Joe V"
-];
-
 // Helper to get a random agent name on each render or load
 export const getRandomAgentName = () => {
   // Let's use Joe V by default for now since you mentioned it

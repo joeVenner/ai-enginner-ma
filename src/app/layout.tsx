@@ -8,6 +8,7 @@ import { Footer } from '@/components/footer';
 import { BackToTop } from '@/components/back-to-top';
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
 import { siteConfig } from '@/config/site';
+import { GoogleTagManager } from '@next/third-parties/google';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -73,6 +74,7 @@ export default function RootLayout({
             <BackToTop />
           </div>
         </ThemeProvider>
+        <GoogleTagManager gtmId="GTM-XXXXXXX" />
       </body>
     </html>
   );

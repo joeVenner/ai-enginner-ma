@@ -5,15 +5,23 @@ export function useBookmarks() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    // We can safely read from localStorage inside an effect to hydrate state
+    let isMounted = true;
+
     try {
       const stored = localStorage.getItem('aiengineer_bookmarks');
-      if (stored) {
+      if (stored && isMounted) {
         setBookmarks(JSON.parse(stored));
       }
     } catch (e) {
       console.error('Failed to load bookmarks', e);
     }
+
+    setMounted(true);
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const toggleBookmark = (slug: string) => {
