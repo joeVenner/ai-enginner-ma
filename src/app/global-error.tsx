@@ -3,6 +3,7 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AlertCircle, RefreshCcw } from 'lucide-react';
+import Link from 'next/link';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -15,7 +16,6 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export default function GlobalError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -40,12 +40,12 @@ export default function GlobalError({
               <RefreshCcw className="mr-2 h-4 w-4" />
               Try again
             </button>
-            <a
+            <Link
               href="/"
               className="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               Return to Home
-            </a>
+            </Link>
           </div>
         </div>
       </body>

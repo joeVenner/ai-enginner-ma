@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useId } from 'react';
 import mermaid from 'mermaid';
 import { useTheme } from 'next-themes';
 import { Skeleton } from '../loading-skeleton';
@@ -15,8 +15,10 @@ export function Mermaid({ chart }: MermaidProps) {
   const [error, setError] = useState<boolean>(false);
   const { resolvedTheme } = useTheme();
   
-  // Use a unique ID for each instance to prevent rendering conflicts
-  const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
+  // Use React's useId which is hydration-safe and pure
+  const reactId = useId();
+  // Sanitize the ID for mermaid (needs to start with letter, only letters/numbers/dashes)
+  const id = `mermaid-${reactId.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   useEffect(() => {
     mermaid.initialize({
