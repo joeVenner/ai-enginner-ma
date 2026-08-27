@@ -14,6 +14,7 @@ import TopLoader from '@/components/top-loader';
 import { siteConfig } from '@/config/site';
 import { GoogleTagManager } from '@next/third-parties/google';
 import { WebSiteSchema } from '@/components/schema-org';
+import { SmoothScroll } from '@/components/smooth-scroll';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -74,6 +75,7 @@ export default function RootLayout({
       >
         <WebSiteSchema />
         <TopLoader />
+        <SmoothScroll />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
