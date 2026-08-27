@@ -3,6 +3,7 @@ import { ZoomImage } from './zoom-image';
 import { Callout } from './callout';
 import { CustomLink } from './link';
 import { YouTube } from './youtube';
+import { Video } from './video';
 import { Heading } from './heading';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
 import { Table, TableHeader, TableRow, TableHead, TableCell } from './table';
@@ -33,6 +34,7 @@ export const mdxComponents = {
   h6: (props: HeadingProps) => <Heading level={6} {...props} />,
   Callout,
   YouTube,
+  Video,
   Tabs,
   TabsList,
   TabsTrigger,
