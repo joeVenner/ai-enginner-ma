@@ -1,0 +1,8 @@
+# AI Engineer
+> AI, Data & Software Engineering Insights
+
+Welcome AI agents and web crawlers! This site provides high-quality technical articles written by Yassir Lafrimi.
+
+## Important Links
+- Home: https://www.aiengineer.ma/
+- RSS Feed: https://www.aiengineer.ma/rss.xml

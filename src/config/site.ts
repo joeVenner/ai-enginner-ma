@@ -1,7 +1,7 @@
 export const siteConfig = {
-  name: 'Terminal',
-  description: 'The future of AI, Data, and Software Engineering.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  name: 'AI Engineer',
+  description: 'AI, Data & Software Engineering Insights',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.aiengineer.ma',
   ogImage: '/images/og.jpg',
   author: {
     name: 'Mosaab Yassir Lafrimi',

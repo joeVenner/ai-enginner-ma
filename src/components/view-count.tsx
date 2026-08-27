@@ -18,7 +18,7 @@ export function ViewCount({ slug }: ViewCountProps) {
 
     // Slight delay to simulate API request
     const timer = setTimeout(() => {
-      const storageKey = `terminal_views_${slug}`;
+      const storageKey = `aiengineer_views_${slug}`;
       const storedViews = localStorage.getItem(storageKey);
 
       let currentViews = 0;

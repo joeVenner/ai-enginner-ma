@@ -21,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
+    default: 'AI Engineer | AI, Data & Software Engineering Insights',
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,

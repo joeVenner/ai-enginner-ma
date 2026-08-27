@@ -29,7 +29,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
             </div>
           ) : (
             <div className="relative aspect-video w-full overflow-hidden bg-muted md:aspect-auto md:h-full flex items-center justify-center">
-              <span className="text-4xl font-mono text-muted-foreground opacity-20">TERMINAL</span>
+              <span className="text-4xl font-mono text-muted-foreground opacity-20">AI ENGINEER</span>
             </div>
           )}
 

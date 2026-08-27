@@ -23,7 +23,7 @@ export function ShareButtons({ title, slug }: ShareButtonsProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareText = encodeURIComponent(`I'm reading "${title}" on Terminal\n\n`);
+  const shareText = encodeURIComponent(`I'm reading "${title}" on AI Engineer\n\n`);
   const encodedUrl = encodeURIComponent(url);
 
   return (

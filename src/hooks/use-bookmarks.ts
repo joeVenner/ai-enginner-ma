@@ -7,7 +7,7 @@ export function useBookmarks() {
   useEffect(() => {
     setMounted(true);
     try {
-      const stored = localStorage.getItem('terminal_bookmarks');
+      const stored = localStorage.getItem('aiengineer_bookmarks');
       if (stored) {
         setBookmarks(JSON.parse(stored));
       }
@@ -26,7 +26,7 @@ export function useBookmarks() {
       }
       
       try {
-        localStorage.setItem('terminal_bookmarks', JSON.stringify(newBookmarks));
+        localStorage.setItem('aiengineer_bookmarks', JSON.stringify(newBookmarks));
       } catch (e) {
         console.error('Failed to save bookmarks', e);
       }

@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
               color: '#a1a1aa', // zinc-400
             }}
           >
-            terminal.dev
+            aiengineer.ma
           </div>
         </div>
       ),

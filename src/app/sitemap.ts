@@ -8,14 +8,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const tags = await getAllTags();
 
   const articleUrls = articles.map((article) => ({
-    url: `\${siteConfig.url}/articles/\${article.slug}`,
+    url: `${siteConfig.url}/articles/${article.slug}`,
     lastModified: new Date(article.frontmatter.date),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
 
   const categoryUrls = categories.map((category) => ({
-    url: `\${siteConfig.url}/categories/\${category.toLowerCase()}`,
+    url: `${siteConfig.url}/categories/${category.toLowerCase()}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
@@ -44,19 +44,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `\${siteConfig.url}/articles`,
+      url: `${siteConfig.url}/articles`,
       lastModified: new Date(),
       changeFrequency: 'daily' as const,
       priority: 0.9,
     },
     {
-      url: `\${siteConfig.url}/categories`,
+      url: `${siteConfig.url}/categories`,
       lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     },
     {
-      url: `\${siteConfig.url}/search`,
+      url: `${siteConfig.url}/search`,
       lastModified: new Date(),
       changeFrequency: 'monthly' as const,
       priority: 0.5,

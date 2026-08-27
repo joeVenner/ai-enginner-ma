@@ -32,7 +32,7 @@ export function Newsletter() {
           <Mail className="h-6 w-6 text-primary" />
         </div>
         <h3 className="mb-2 text-2xl font-bold tracking-tight text-foreground">
-          Join the Terminal Newsletter
+          Join the AI Engineer Newsletter
         </h3>
         <p className="mb-8 max-w-md text-muted-foreground">
           Get weekly deep dives into AI, data engineering, and the future of software development delivered straight to your inbox.
