@@ -13,6 +13,8 @@ import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
+import { CodeBlockManager } from '@/components/copy-code-button';
+import { ImageZoomManager } from '@/components/image-zoom';
 
 interface ArticlePageProps {
   params: {
@@ -90,6 +92,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
       <ReadingProgress />
+      <CodeBlockManager />
+      <ImageZoomManager />
       {/* Back button */}
       <Link
         href="/articles"
