@@ -15,6 +15,7 @@ import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ArticleNav } from '@/components/article-nav';
 import { ReadingProgress } from '@/components/reading-progress';
+import { EstimatedRead } from '@/components/estimated-read';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
 import { HistoryTracker } from '@/components/history-tracker';
@@ -110,6 +111,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         }}
       />
       <ReadingProgress />
+      <EstimatedRead readingTime={article.readingTime} />
+      
       {/* Back button */}
       <Link
         href="/articles"
