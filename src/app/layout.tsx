@@ -7,8 +7,10 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { BackToTop } from '@/components/back-to-top';
 import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
+import { CommandPalette } from '@/components/command-palette';
 import { siteConfig } from '@/config/site';
 import { GoogleTagManager } from '@next/third-parties/google';
+import { WebSiteSchema } from '@/components/schema-org';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -60,6 +62,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} min-h-screen bg-background font-sans antialiased selection:bg-primary selection:text-primary-foreground`}
       >
+        <WebSiteSchema />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -67,6 +70,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <KeyboardShortcuts />
+          <CommandPalette />
           <div className="flex min-h-screen flex-col">
             <Header />
             <main className="flex-1">{children}</main>

@@ -15,6 +15,7 @@ import { ReadingProgress } from '@/components/reading-progress';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
 import { ArticleFeedback } from '@/components/article-feedback';
+import { ArticleSchema } from '@/components/schema-org';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
@@ -91,6 +92,16 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
+      <ArticleSchema
+        article={{
+          title,
+          description,
+          date,
+          author,
+          slug,
+          image
+        }}
+      />
       <ReadingProgress />
       {/* Back button */}
       <Link
