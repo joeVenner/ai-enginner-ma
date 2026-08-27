@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import { TableOfContents } from '@/components/table-of-contents';
+import { MobileToc } from '@/components/mobile-toc';
 import { ShareButtons } from '@/components/share-buttons';
 import { EditOnGithub } from '@/components/edit-on-github';
 
@@ -164,9 +165,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* Article Content Layout */}
       <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16">
-        
+
         {/* Main Content */}
         <div className="flex-1 min-w-0">
+          <MobileToc content={article.content} />
+
           <div className="prose prose-zinc dark:prose-invert prose-lg md:prose-xl max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-xl">
             <MDXRemote 
               source={article.content} 
