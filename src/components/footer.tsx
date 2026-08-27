@@ -38,6 +38,9 @@ export function Footer() {
                 <Link href="/search" className="hover:text-foreground transition-colors">Search</Link>
               </li>
               <li>
+                <Link href="/newsletter" className="hover:text-foreground transition-colors">Newsletter</Link>
+              </li>
+              <li>
                 <a href="/rss.xml" target="_blank" rel="noreferrer" className="hover:text-foreground transition-colors">
                   RSS Feed
                 </a>
