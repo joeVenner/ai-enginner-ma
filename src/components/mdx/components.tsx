@@ -2,6 +2,7 @@ import React from 'react';
 import { CodeBlock } from './code-block';
 import { ZoomImage } from './zoom-image';
 import { GlossaryTerm } from '../glossary-term';
+import { FileTreeExplorer } from '../file-tree';
 import Link from 'next/link';
 
 interface MDXProps {
@@ -54,6 +55,7 @@ export const mdxComponents = {
   Callout,
   EntityLink,
   GlossaryTerm,
+  FileTreeExplorer,
 
   // Enhanced pre/code blocks with copy/download buttons and syntax highlighting
   pre: ({ children, ...props }: MDXProps) => {
