@@ -35,29 +35,19 @@ export function ArticleFooterActions({ title, slug, tags }: ArticleFooterActions
           </div>
         )}
 
-        {/* Actions Row: Bookmark + Share + Edit */}
-        <div className="flex flex-col sm:flex-row items-center justify-between rounded-2xl bg-gradient-to-b from-card to-secondary/10 p-5 sm:p-8 border border-border/50 shadow-sm w-full gap-6">
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider text-[11px]">Save Article</span>
-            <BookmarkButton slug={slug} />
-          </div>
-
-          <div className="hidden sm:block w-px h-10 bg-border/50"></div>
-          <div className="sm:hidden h-px w-full bg-border/50"></div>
-
-          <div className="flex flex-col sm:flex-row gap-8 items-center justify-between w-full sm:w-auto">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider text-[11px]">Share</span>
-              <ShareButtons title={title} slug={slug} />
-            </div>
-
-            <div className="hidden sm:block w-px h-10 bg-border/50"></div>
-
-            <div className="flex items-center gap-4">
-              <PrintButton />
-              <EditOnGithub slug={slug} />
-            </div>
-          </div>
+        {/* Actions Row: Icons Only */}
+        <div className="flex flex-col sm:flex-row items-center justify-center rounded-2xl bg-gradient-to-b from-card to-secondary/10 p-4 sm:p-6 border border-border/50 shadow-sm w-full gap-4 sm:gap-6">
+          <BookmarkButton slug={slug} />
+          <div className="hidden sm:block w-px h-6 bg-border/50"></div>
+          <div className="sm:hidden h-px w-12 bg-border/50"></div>
+          
+          <ShareButtons title={title} slug={slug} />
+          
+          <div className="hidden sm:block w-px h-6 bg-border/50"></div>
+          <div className="sm:hidden h-px w-12 bg-border/50"></div>
+          
+          <PrintButton />
+          <EditOnGithub slug={slug} />
         </div>
       </div>
     </div>
