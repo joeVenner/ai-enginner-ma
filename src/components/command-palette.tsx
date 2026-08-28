@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, FileText, Layout, Sun, Moon, Laptop, ArrowRight, Mic, MicOff } from 'lucide-react';
+import { Search, FileText, Layout, Sun, Moon, Laptop, ArrowRight, Mic, MicOff, Clock } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 interface SearchResult {
@@ -16,6 +16,7 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isListening, setIsListening] = useState(false);
@@ -26,6 +27,18 @@ export function CommandPalette() {
 
   // Initialize speech recognition if supported
   useEffect(() => {
+    // Load recent searches
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('aiengineer_recent_searches');
+        if (saved) {
+          setRecentSearches(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error('Failed to parse recent searches', e);
+      }
+    }
+
     if (typeof window !== 'undefined') {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
@@ -121,9 +134,20 @@ export function CommandPalette() {
   }, [query]);
 
   const runCommand = useCallback((command: () => void) => {
+    // Save to recent searches if there's a meaningful query
+    if (query.trim().length > 2) {
+      try {
+        const updatedSearches = [query.trim(), ...recentSearches.filter(s => s !== query.trim())].slice(0, 5);
+        setRecentSearches(updatedSearches);
+        localStorage.setItem('aiengineer_recent_searches', JSON.stringify(updatedSearches));
+      } catch (e) {
+        console.error('Failed to save recent search', e);
+      }
+    }
+
     setOpen(false);
     command();
-  }, []);
+  }, [query, recentSearches]);
 
   // Handle keyboard navigation inside the modal
   useEffect(() => {
@@ -131,7 +155,12 @@ export function CommandPalette() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Calculate total clickable items based on view state
-      const totalItems = query === '' ? 7 : results.length; // 7 static links when no query
+      let totalItems = 0;
+      if (query !== '') {
+        totalItems = results.length;
+      } else {
+        totalItems = 7 + recentSearches.length; // 7 static links + recent searches
+      }
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -144,17 +173,25 @@ export function CommandPalette() {
         if (query !== '' && results.length > 0) {
           runCommand(() => router.push(`/articles/${results[selectedIndex].slug}`));
         } else if (query === '') {
-          // Static routing mapping based on index
-          const staticRoutes = [
-            () => router.push('/'),
-            () => router.push('/articles'),
-            () => router.push('/newsletter'),
-            () => router.push('/history'),
-            () => setTheme('light'),
-            () => setTheme('dark'),
-            () => setTheme('system')
-          ];
-          runCommand(staticRoutes[selectedIndex]);
+          if (selectedIndex < recentSearches.length) {
+            // User hit Enter on a recent search item -> populate query and search!
+            setQuery(recentSearches[selectedIndex]);
+          } else {
+            // Static routing mapping based on index (offset by recent searches)
+            const staticIndex = selectedIndex - recentSearches.length;
+            const staticRoutes = [
+              () => router.push('/'),
+              () => router.push('/articles'),
+              () => router.push('/newsletter'),
+              () => router.push('/history'),
+              () => setTheme('light'),
+              () => setTheme('dark'),
+              () => setTheme('system')
+            ];
+            if (staticRoutes[staticIndex]) {
+              runCommand(staticRoutes[staticIndex]);
+            }
+          }
         }
       }
     };
@@ -241,56 +278,89 @@ export function CommandPalette() {
 
           {query === '' && (
             <>
+              {recentSearches.length > 0 && (
+                <div className="mb-4">
+                  <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+                    <span>Recent Searches</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRecentSearches([]);
+                        localStorage.removeItem('aiengineer_recent_searches');
+                      }}
+                      className="text-[10px] hover:text-foreground transition-colors"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  {recentSearches.map((searchQuery, index) => (
+                    <button
+                      key={`recent-${index}`}
+                      className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                        selectedIndex === index
+                          ? 'bg-primary/20 text-primary'
+                          : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                      }`}
+                      onClick={() => setQuery(searchQuery)}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                    >
+                      <Clock className={`h-4 w-4 shrink-0 ${selectedIndex === index ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className="flex-1 font-medium">{searchQuery}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
               <div className="mb-4">
                 <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Navigation
                 </div>
                 <button
                   className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
-                    selectedIndex === 0
+                    selectedIndex === recentSearches.length + 0
                       ? 'bg-primary/20 text-primary'
                       : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
                   }`}
                   onClick={() => runCommand(() => router.push('/'))}
-                  onMouseEnter={() => setSelectedIndex(0)}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 0)}
                 >
-                  <Layout className={`h-4 w-4 shrink-0 ${selectedIndex === 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <Layout className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 0 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Home</span>
                 </button>
                 <button
                   className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
-                    selectedIndex === 1
+                    selectedIndex === recentSearches.length + 1
                       ? 'bg-primary/20 text-primary'
                       : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
                   }`}
                   onClick={() => runCommand(() => router.push('/articles'))}
-                  onMouseEnter={() => setSelectedIndex(1)}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 1)}
                 >
-                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === 1 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 1 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Articles</span>
                 </button>
                 <button
                   className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
-                    selectedIndex === 2
+                    selectedIndex === recentSearches.length + 2
                       ? 'bg-primary/20 text-primary'
                       : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
                   }`}
                   onClick={() => runCommand(() => router.push('/newsletter'))}
-                  onMouseEnter={() => setSelectedIndex(2)}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 2)}
                 >
-                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === 2 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 2 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Newsletter</span>
                 </button>
                 <button
                   className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
-                    selectedIndex === 3
+                    selectedIndex === recentSearches.length + 3
                       ? 'bg-primary/20 text-primary'
                       : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
                   }`}
                   onClick={() => runCommand(() => router.push('/history'))}
-                  onMouseEnter={() => setSelectedIndex(3)}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 3)}
                 >
-                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === 3 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 3 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Reading History</span>
                 </button>
               </div>
@@ -301,38 +371,38 @@ export function CommandPalette() {
                 </div>
                 <button
                   className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
-                    selectedIndex === 4
+                    selectedIndex === recentSearches.length + 4
                       ? 'bg-primary/20 text-primary'
                       : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
                   }`}
                   onClick={() => runCommand(() => setTheme('light'))}
-                  onMouseEnter={() => setSelectedIndex(4)}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 4)}
                 >
-                  <Sun className={`h-4 w-4 shrink-0 ${selectedIndex === 4 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <Sun className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 4 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Light Theme</span>
                 </button>
                 <button
                   className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
-                    selectedIndex === 5
+                    selectedIndex === recentSearches.length + 5
                       ? 'bg-primary/20 text-primary'
                       : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
                   }`}
                   onClick={() => runCommand(() => setTheme('dark'))}
-                  onMouseEnter={() => setSelectedIndex(5)}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 5)}
                 >
-                  <Moon className={`h-4 w-4 shrink-0 ${selectedIndex === 5 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <Moon className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 5 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">Dark Theme</span>
                 </button>
                 <button
                   className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
-                    selectedIndex === 6
+                    selectedIndex === recentSearches.length + 6
                       ? 'bg-primary/20 text-primary'
                       : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
                   }`}
                   onClick={() => runCommand(() => setTheme('system'))}
-                  onMouseEnter={() => setSelectedIndex(6)}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 6)}
                 >
-                  <Laptop className={`h-4 w-4 shrink-0 ${selectedIndex === 6 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <Laptop className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 6 ? 'text-primary' : 'text-muted-foreground'}`} />
                   <span className="flex-1 font-medium">System Theme</span>
                 </button>
               </div>
