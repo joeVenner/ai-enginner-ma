@@ -1,8 +1,10 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Link2, Check } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 
 interface CopyLinkButtonProps {
   slug: string;
@@ -27,23 +29,25 @@ export function CopyLinkButton({ slug, className = '' }: CopyLinkButtonProps) {
   };
 
   return (
-    <button
-      onClick={handleCopy}
-      className={`group flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/30 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-all hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${className}`}
-      aria-label="Copy link to clipboard"
-      title="Copy link"
-    >
-      {copied ? (
-        <>
-          <Check className="h-3.5 w-3.5 text-green-500" />
-          <span className="text-green-500">Copied!</span>
-        </>
-      ) : (
-        <>
-          <Link2 className="h-3.5 w-3.5 transition-transform group-hover:scale-110" />
-          <span>Copy Link</span>
-        </>
-      )}
-    </button>
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={handleCopy}
+            className={`flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-secondary/30 text-muted-foreground transition-all hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${className}`}
+            aria-label="Copy link to clipboard"
+          >
+            {copied ? (
+              <Check className="h-4 w-4 text-green-500" />
+            ) : (
+              <Link2 className="h-4 w-4 transition-transform hover:scale-110" />
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{copied ? 'Copied!' : 'Copy Link'}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

@@ -1,4 +1,6 @@
+
 import { siteConfig } from '@/config/site';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 
 interface EditOnGithubProps {
   slug: string;
@@ -16,14 +18,23 @@ export function EditOnGithub({ slug }: EditOnGithubProps) {
   const editUrl = `${githubRepoUrl}/edit/main/content/articles/${slug}.md`;
 
   return (
-    <a
-      href={editUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-    >
-      <GithubIcon className="h-4 w-4" />
-      <span>Edit this page on GitHub</span>
-    </a>
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <a
+            href={editUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border/50 bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Edit this page on GitHub"
+          >
+            <GithubIcon className="h-4 w-4" />
+          </a>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Edit on GitHub</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

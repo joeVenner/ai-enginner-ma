@@ -2,7 +2,7 @@
 title: "NVIDIA Acquires HuggingFace for $12B in Historic Move"
 description: "In a stunning shift of the AI landscape, NVIDIA has acquired open-source champion HuggingFace, sparking intense debate about the future of open weights."
 date: "2026-08-25"
-author: "Editor"
+author: "Mosaab Yassir Lafrimi"
 category: "News"
 tags: ["AI", "Acquisition", "Open Source", "NVIDIA"]
 aiSummary: 
