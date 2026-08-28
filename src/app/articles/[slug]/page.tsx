@@ -99,7 +99,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   const { title, description, date, author, category, tags, image, aiSummary } = article.frontmatter;
 
   return (
-    <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
+    <article className="mx-auto min-h-screen max-w-[1400px] px-4 py-12 sm:px-6 md:py-16">
       <HistoryTracker slug={slug} />
       <ArticleSchema
         article={{
