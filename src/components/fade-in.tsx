@@ -8,9 +8,10 @@ interface FadeInProps {
   delay?: number;
   direction?: 'up' | 'down' | 'left' | 'right' | 'none';
   className?: string;
+  onMount?: boolean;
 }
 
-export function FadeIn({ children, delay = 0, direction = 'up', className = '' }: FadeInProps) {
+export function FadeIn({ children, delay = 0, direction = 'up', className = '', onMount = false }: FadeInProps) {
   const directions = {
     up: { y: 40, x: 0 },
     down: { y: -40, x: 0 },
@@ -25,12 +26,9 @@ export function FadeIn({ children, delay = 0, direction = 'up', className = '' }
         opacity: 0, 
         ...directions[direction]
       }}
-      whileInView={{ 
-        opacity: 1, 
-        x: 0, 
-        y: 0 
-      }}
-      viewport={{ once: true, margin: "-100px" }}
+      animate={onMount ? { opacity: 1, x: 0, y: 0 } : undefined}
+      whileInView={!onMount ? { opacity: 1, x: 0, y: 0 } : undefined}
+      viewport={!onMount ? { once: true, margin: "-100px" } : undefined}
       transition={{ 
         duration: 0.7, 
         ease: [0.21, 0.47, 0.32, 0.98], // easeOutCubic
