@@ -1,39 +1,45 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useTheme } from 'next-themes';
-
+/**
+ * Ambient backdrop for the landing hero.
+ *
+ * Server component on purpose: the previous version was a client component that
+ * rendered `null` until `useEffect` fired, so the background popped in after
+ * hydration. Everything here is theme-aware through CSS variables, so no theme
+ * hook and no mount gate are needed.
+ */
 export function HeroBackground() {
-  const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   return (
-    <div className="absolute inset-0 z-[-1] overflow-hidden pointer-events-none">
-      <div 
-        className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),rgba(255,255,255,0))] dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.1),rgba(0,0,0,0))]" 
-      />
-      <div 
-        className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-lighten"
-        style={{ transform: 'translate(20%, -20%)' }}
-      />
-      <div 
-        className="absolute top-[20%] left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-lighten"
-        style={{ transform: 'translate(-20%, 0)' }}
-      />
-      
-      {/* Interactive grid pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]"
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[46rem] overflow-hidden"
+    >
+      {/* Fine engineering grid, faded out towards the bottom so it never fights
+          the article content below the fold. */}
+      <div
+        className="absolute inset-0 opacity-[0.55] dark:opacity-40"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='${resolvedTheme === 'dark' ? '%23ffffff' : '%23000000'}' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage:
+            'linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)',
+          backgroundSize: '72px 72px',
+          maskImage:
+            'radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 78%)',
+          WebkitMaskImage:
+            'radial-gradient(ellipse 90% 70% at 50% 0%, black 20%, transparent 78%)',
         }}
       />
+
+      {/* A single wash of the brand accent, kept very low so it reads as
+          atmosphere rather than as a gradient blob. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse 60% 50% at 18% -10%, color-mix(in oklch, var(--brand) 14%, transparent), transparent 70%)',
+        }}
+      />
+
+      {/* Hairline that anchors the grid to the page instead of letting it
+          dissolve into nothing. */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
     </div>
   );
 }

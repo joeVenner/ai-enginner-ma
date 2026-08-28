@@ -17,19 +17,19 @@ import { LocalAnalyticsProvider } from "@/components/local-analytics-provider";
 // Optimized font loading
 const inter = Inter({ 
   subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-inter",
   display: "swap",
 });
 
 const spaceGrotesk = Space_Grotesk({ 
   subsets: ["latin"],
-  variable: "--font-heading",
+  variable: "--font-space-grotesk",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -92,7 +92,7 @@ export default function RootLayout({
             <TextSelectionShare />
             <ScrollToTop />
             <EasterEgg />
-            <main className="flex-1 w-full relative z-0 mt-16 md:mt-20">
+            <main id="main-content" className="flex-1 w-full relative z-0 pt-16">
               {children}
             </main>
             <Footer />
