@@ -25,9 +25,9 @@ export function Comments() {
         <Giscus
           id="comments"
           repo="joeVenner/ai-enginner-ma"
-          repoId="R_kgDONnFwaw" 
+          repoId="R_kgDOUFGCwA"
           category="General"
-          categoryId="DIC_kwDONnFwa84CmCQQ"
+          categoryId="DIC_kwDOUFGCwM4DEVMa"
           mapping="pathname"
           term="Welcome to @giscus/react component!"
           reactionsEnabled="1"
