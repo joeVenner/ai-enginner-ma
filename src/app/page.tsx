@@ -36,9 +36,12 @@ export default async function Home() {
     featuredArticles = [...featuredArticles, ...remaining];
   }
     
-  const featuredSlugs = new Set(featuredArticles.map(a => a.slug));
+  // The recent articles list should show the latest articles.
+  // We only filter out the explicitly featured ones so we don't duplicate the hero's main highlighted articles,
+  // but we don't filter out the backfilled ones so the list isn't empty when there are few articles.
+  const explicitFeaturedSlugs = new Set(explicitFeatured.map(a => a.slug));
   const recentArticles = articles
-    .filter((a) => !featuredSlugs.has(a.slug))
+    .filter((a) => !explicitFeaturedSlugs.has(a.slug))
     .slice(0, 5);
 
   // Only surface categories that actually have articles behind them. The
@@ -94,7 +97,7 @@ export default async function Home() {
           </div>
 
           {featuredArticles.length > 0 && (
-            <FadeIn onMount delay={0.24} direction="none" className="w-full min-w-0">
+            <FadeIn onMount delay={0.24} direction="none" className="w-full min-w-0 -mx-4 px-4 sm:mx-0 sm:px-0 mt-4 sm:mt-0">
               <FeaturedCarousel articles={featuredArticles} />
             </FadeIn>
           )}
@@ -281,7 +284,7 @@ export default async function Home() {
         ---------------------------------------------------------------- */}
         <section className="border-t border-border py-14 md:py-20">
           <FadeIn>
-            <div className="flex flex-col gap-8 rounded-2xl border border-border bg-card px-7 py-9 sm:px-10 sm:py-10 md:flex-row md:items-center md:justify-between md:gap-12">
+            <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card px-6 py-8 sm:px-10 sm:py-10 md:flex-row md:items-center md:justify-between md:gap-12">
               <div className="max-w-md">
                 <h2 className="font-heading text-xl font-bold tracking-tight md:text-2xl">
                   Follow in your feed reader

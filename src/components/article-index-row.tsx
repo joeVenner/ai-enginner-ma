@@ -18,7 +18,7 @@ export function ArticleIndexRow({ article }: ArticleIndexRowProps) {
   const parsedDate = parseISO(date);
 
   return (
-    <article className="group relative grid grid-cols-1 gap-x-8 gap-y-3 py-8 transition-colors md:grid-cols-[9rem_1fr_auto] md:items-start md:py-9">
+    <article className="group relative grid grid-cols-1 gap-x-8 gap-y-3 py-6 sm:py-8 transition-colors md:grid-cols-[9rem_1fr_auto] md:items-start md:py-9">
       {/* Meta rail. Collapses above the title on small screens. */}
       <div className="order-1 flex items-center gap-3 font-mono text-xs text-muted-foreground md:order-none md:flex-col md:items-start md:gap-1.5 md:pt-1">
         <time dateTime={date}>{format(parsedDate, 'MMM d, yyyy')}</time>
