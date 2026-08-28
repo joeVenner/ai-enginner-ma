@@ -18,6 +18,7 @@ import { ArticleNav } from '@/components/article-nav';
 import { NextArticleTeaser } from '@/components/next-article-teaser';
 import { EstimatedRead } from '@/components/estimated-read';
 import { AuthorBio } from '@/components/author-bio';
+import { AuthorHoverCard } from '@/components/author-hover-card';
 import { ViewCount } from '@/components/view-count';
 import { HistoryTracker } from '@/components/history-tracker';
 import { Comments } from "@/components/comments";
@@ -149,10 +150,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </p>
 
         <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-          <Link href={`/authors/${encodeURIComponent((author || 'Editor').toLowerCase())}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-            <User className="h-4 w-4" />
-            <span className="font-medium text-foreground hover:text-primary transition-colors">{author}</span>
-          </Link>
+          <AuthorHoverCard authorName={author || 'Editor'}>
+            <Link href={`/authors/${encodeURIComponent((author || 'Editor').toLowerCase())}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+              <User className="h-4 w-4" />
+              <span className="font-medium text-foreground hover:text-primary transition-colors">{author}</span>
+            </Link>
+          </AuthorHoverCard>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <time dateTime={date}>{format(parseISO(date), 'MMMM d, yyyy')}</time>
