@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Quote, Copy, Check } from 'lucide-react';
+import { Quote, Copy, Check, Search } from 'lucide-react';
 import { siteConfig } from '@/config/site';
+import { useRouter } from 'next/navigation';
 
 export function TextSelectionShare() {
   const [selection, setSelection] = useState<{
@@ -12,6 +13,7 @@ export function TextSelectionShare() {
     show: boolean;
   }>({ text: '', x: 0, y: 0, show: false });
   const [copied, setCopied] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -84,6 +86,20 @@ export function TextSelectionShare() {
     }
   };
 
+  const handleSearch = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!selection.text) return;
+
+    // Clear selection UI
+    setSelection((prev) => ({ ...prev, show: false }));
+
+    // Deselect text in browser
+    window.getSelection()?.removeAllRanges();
+
+    // Navigate to search page with the query
+    router.push(`/search?q=${encodeURIComponent(selection.text)}`);
+  };
+
   if (!selection.show) return null;
 
   const url = typeof window !== 'undefined' ? window.location.href : siteConfig.url;
@@ -140,6 +156,16 @@ export function TextSelectionShare() {
           <Quote className="h-4 w-4 transition-transform group-hover:scale-110" />
           <span className="text-[10px] font-semibold tracking-wider">Email</span>
         </a>
+        <div className="h-8 w-px bg-white/10 mx-1"></div>
+
+        <button
+          onClick={handleSearch}
+          className="flex flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 text-white/80 transition-all hover:bg-white/10 hover:text-white group"
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          <Search className="h-4 w-4 transition-transform group-hover:scale-110" />
+          <span className="text-[10px] font-semibold tracking-wider">Search</span>
+        </button>
       </div>
     </div>
   );
