@@ -397,3 +397,8 @@ pre code, .prose pre code {
 :root.focus-mode header:hover .right-actions {
   opacity: 1;
 }
+
+/* Utilities */
+.capitalize-first:first-letter {
+  text-transform: capitalize;
+}

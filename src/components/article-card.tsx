@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, formatDistanceToNow, differenceInDays } from 'date-fns';
 import { Calendar, ArrowRight, Tag } from 'lucide-react';
 import { BookmarkButton } from './bookmark-button';
 import { ReadTimeBadge } from './read-time-badge';
@@ -12,6 +12,12 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article, featured = false }: ArticleCardProps) {
   const { title, description, date, category, tags } = article.frontmatter;
+
+  const parsedDate = parseISO(date);
+  const isRecent = differenceInDays(new Date(), parsedDate) < 30;
+  const displayDate = isRecent
+    ? `${formatDistanceToNow(parsedDate, { addSuffix: true })}`
+    : format(parsedDate, 'MMMM d, yyyy');
 
   if (featured) {
     return (
@@ -27,9 +33,9 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
                 {category}
               </Link>
             )}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5" title={format(parsedDate, 'MMMM d, yyyy')}>
               <Calendar className="h-3.5 w-3.5" />
-              <time dateTime={date}>{format(parseISO(date), 'MMMM d, yyyy')}</time>
+              <time dateTime={date} className="capitalize-first">{displayDate}</time>
             </div>
             <div className="hidden sm:block h-1 w-1 rounded-full bg-border"></div>
             <ReadTimeBadge minutes={article.readingTime} />
@@ -86,7 +92,7 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
       <div className="flex flex-1 flex-col p-7">
         <div className="mb-5 flex w-full flex-wrap items-center justify-between gap-3 text-xs font-medium text-muted-foreground">
           <div className="flex items-center gap-3">
-            <time dateTime={date}>{format(parseISO(date), 'MMM d, yyyy')}</time>
+            <time dateTime={date} title={format(parsedDate, 'MMMM d, yyyy')} className="capitalize-first">{displayDate}</time>
             <span className="hidden sm:inline-block h-1 w-1 rounded-full bg-border"></span>
             <ReadTimeBadge minutes={article.readingTime} />
           </div>
