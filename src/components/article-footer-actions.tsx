@@ -5,6 +5,7 @@ import { ShareButtons } from '@/components/share-buttons';
 import { EditOnGithub } from '@/components/edit-on-github';
 import { ClapButton } from '@/components/clap-button';
 import { BookmarkButton } from '@/components/bookmark-button';
+import { PrintButton } from '@/components/print-button';
 
 interface ArticleFooterActionsProps {
   title: string;
@@ -52,7 +53,10 @@ export function ArticleFooterActions({ title, slug, tags }: ArticleFooterActions
 
             <div className="hidden sm:block w-px h-10 bg-border/50"></div>
 
-            <EditOnGithub slug={slug} />
+            <div className="flex items-center gap-4">
+              <PrintButton />
+              <EditOnGithub slug={slug} />
+            </div>
           </div>
         </div>
       </div>
