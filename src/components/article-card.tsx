@@ -3,6 +3,7 @@ import { format, parseISO, formatDistanceToNow, differenceInDays } from 'date-fn
 import { Calendar, ArrowRight, Tag } from 'lucide-react';
 import { BookmarkButton } from './bookmark-button';
 import { ReadTimeBadge } from './read-time-badge';
+import { ReadIndicator } from './read-indicator';
 import type { Article } from '@/lib/content';
 
 interface ArticleCardProps {
@@ -45,8 +46,11 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
           </div>
 
           <h2 className="mb-5 text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight text-foreground transition-colors group-hover:text-primary [text-wrap:balance]">
-            <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
+            <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0 flex items-center gap-2">
               {title}
+              <div className="z-20 relative">
+                <ReadIndicator slug={article.slug} />
+              </div>
             </Link>
           </h2>
 
@@ -114,8 +118,11 @@ export function ArticleCard({ article, featured = false }: ArticleCardProps) {
 
         <div className="group relative w-full mb-5 flex-1">
           <h3 className="mb-3 text-xl md:text-2xl font-bold leading-tight tracking-tight text-foreground group-hover:text-primary transition-colors [text-wrap:balance]">
-            <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0">
+            <Link href={`/articles/${article.slug}`} className="after:absolute after:inset-0 flex items-center gap-2">
               {title}
+              <div className="z-20 relative">
+                <ReadIndicator slug={article.slug} />
+              </div>
             </Link>
           </h3>
           <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const HISTORY_STORAGE_KEY = 'aiengineer_reading_history';
-const MAX_HISTORY_ITEMS = 10;
+const MAX_HISTORY_ITEMS = 100;
 
 export function useReadingHistory() {
   const [history, setHistory] = useState<string[]>([]);
