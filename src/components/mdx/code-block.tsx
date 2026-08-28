@@ -6,6 +6,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
+import { Mermaid } from './mermaid';
 
 interface CodeBlockProps extends React.HTMLAttributes<HTMLPreElement> {
   children?: React.ReactNode;
@@ -46,6 +47,11 @@ export function CodeBlock({ children }: CodeBlockProps) {
   }
 
   const codeString = extractText(children);
+
+  // If this is a Mermaid diagram block, intercept it entirely and render the diagram!
+  if (language === 'mermaid') {
+    return <Mermaid chart={codeString} />;
+  }
 
   const handleDownload = () => {
     const blob = new Blob([codeString], { type: 'text/plain' });
