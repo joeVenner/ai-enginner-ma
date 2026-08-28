@@ -15,6 +15,7 @@ import { BookmarkButton } from '@/components/bookmark-button';
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ArticleNav } from '@/components/article-nav';
+import { NextArticleTeaser } from '@/components/next-article-teaser';
 import { EstimatedRead } from '@/components/estimated-read';
 import { AuthorBio } from '@/components/author-bio';
 import { ViewCount } from '@/components/view-count';
@@ -260,6 +261,9 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       </div>
 
       <MobileActionsBar title={title} slug={article.slug} />
+
+      {/* Slide-in Next Article Teaser */}
+      <NextArticleTeaser nextArticle={adjacentArticles.next} />
     </article>
   );
 }
