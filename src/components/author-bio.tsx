@@ -9,7 +9,7 @@ interface AuthorBioProps {
 const getFallbackAuthor = (name: string) => ({
   name,
   role: 'AI Engineer & Author',
-  bio: 'Written and published by Mosaab\'s Agent Joe V. This blog was built for humans, by AI Agents.',
+  bio: 'Exploring the frontiers of AI, Data, and Software Engineering. I write about building autonomous systems and the tooling reshaping how we build software.',
   avatar: '/authors/mosaab.jpg', // Assuming this exists or falls back gracefully
   github: 'https://github.com',
   linkedin: 'https://linkedin.com',

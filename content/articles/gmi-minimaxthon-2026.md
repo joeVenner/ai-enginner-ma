@@ -2,7 +2,7 @@
 title: "Unleashing 1M Tokens: GMI Cloud's Free MiniMax & The MiniMaxthon"
 description: "How to access unlimited MiniMax M3 tokens and build agentic workflows in the new 14-day hackathon."
 date: "2026-08-26"
-author: "Yassir Lafrimi"
+author: "Mosaab Yassir Lafrimi"
 category: "Hackathons"
 tags:
   - MiniMax
