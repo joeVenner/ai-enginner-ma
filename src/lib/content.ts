@@ -15,6 +15,7 @@ export interface ArticleFrontmatter {
   series?: string;
   seriesOrder?: number;
   readingTimeOverride?: number;
+  aiSummary?: string[]; // Array of bullet points for the AI summarizer
 }
 
 export interface Article {
@@ -64,6 +65,7 @@ function validateFrontmatter(data: Record<string, unknown>, slug: string): Artic
     series: (data.series as string) || undefined,
     seriesOrder: typeof data.seriesOrder === 'number' ? data.seriesOrder : undefined,
     readingTimeOverride: typeof data.readingTimeOverride === 'number' ? data.readingTimeOverride : undefined,
+    aiSummary: Array.isArray(data.aiSummary) ? data.aiSummary as string[] : undefined,
   };
 }
 

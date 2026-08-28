@@ -50,18 +50,44 @@ export function SearchClient({ initialArticles }: { initialArticles: Article[] }
 
     const lowerQuery = debouncedQuery.toLowerCase();
 
-    return initialArticles.filter((article) => {
-      const { title, description, category, tags } = article.frontmatter;
-      const content = article.content;
+    const scoredArticles = initialArticles
+      .map((article) => {
+        let score = 0;
+        const { title, description, category, tags } = article.frontmatter;
+        const content = article.content;
 
-      return (
-        title.toLowerCase().includes(lowerQuery) ||
-        description.toLowerCase().includes(lowerQuery) ||
-        (category && category.toLowerCase().includes(lowerQuery)) ||
-        (tags && tags.some(tag => tag.toLowerCase().includes(lowerQuery))) ||
-        content.toLowerCase().includes(lowerQuery)
-      );
-    });
+        // Title match (Highest weight)
+        if (title.toLowerCase().includes(lowerQuery)) {
+          score += 10;
+          if (title.toLowerCase().startsWith(lowerQuery)) score += 5;
+        }
+
+        // Tags match (High weight)
+        if (tags && tags.some((tag) => tag.toLowerCase().includes(lowerQuery))) {
+          score += 5;
+        }
+
+        // Description match (Medium weight)
+        if (description.toLowerCase().includes(lowerQuery)) {
+          score += 3;
+        }
+
+        // Category match (Low-Medium weight)
+        if (category && category.toLowerCase().includes(lowerQuery)) {
+          score += 2;
+        }
+
+        // Content match (Base weight)
+        if (content.toLowerCase().includes(lowerQuery)) {
+          score += 1;
+        }
+
+        return { article, score };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    return scoredArticles.map((item) => item.article);
   }, [debouncedQuery, initialArticles]);
 
   return (

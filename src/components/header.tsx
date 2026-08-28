@@ -2,14 +2,13 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Terminal, Rss, ChevronDown } from 'lucide-react';
-import { ThemeToggle } from './theme-toggle';
 import { siteConfig } from '@/config/site';
 import { GithubIcon } from './icons';
 import { useState, useRef, useEffect } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
 import { MobileNav } from '@/components/mobile-nav';
-import { HighContrastToggle } from '@/components/high-contrast-toggle';
-import { TextSizeAdjust } from '@/components/text-size-adjust';
+import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
+import { ReaderSettings } from '@/components/reader-settings';
 
 export function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -128,6 +127,10 @@ export function Header() {
               <kbd className="ml-2 hidden rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:inline-block">⌘K</kbd>
             </button>
 
+            <div className="hidden lg:flex items-center space-x-1">
+              <KeyboardShortcuts />
+            </div>
+
             <TooltipProvider delayDuration={100}>
               <div className="hidden sm:flex items-center space-x-1">
                 <Tooltip>
@@ -165,10 +168,8 @@ export function Header() {
                 </Tooltip>
               </div>
             </TooltipProvider>
-            
-            <ThemeToggle />
-            <TextSizeAdjust />
-            <HighContrastToggle />
+
+            <ReaderSettings />
           </nav>
         </div>
       </div>

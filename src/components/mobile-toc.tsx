@@ -13,9 +13,10 @@ interface TocItem {
 
 interface MobileTocProps {
   content: string;
+  className?: string;
 }
 
-export function MobileToc({ content }: MobileTocProps) {
+export function MobileToc({ content, className }: MobileTocProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>('');
 
@@ -75,8 +76,8 @@ export function MobileToc({ content }: MobileTocProps) {
   }
 
   return (
-    <div className="lg:hidden mb-8 w-full">
-      <div 
+    <div className={cn("lg:hidden mb-8 w-full", className)}>
+      <div
         className="flex items-center justify-between rounded-lg border border-border bg-card p-4 cursor-pointer hover:bg-muted/50 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >

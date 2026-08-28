@@ -7,6 +7,7 @@ import { Metadata } from 'next';
 import { siteConfig } from '@/config/site';
 import { TableOfContents } from '@/components/table-of-contents';
 import { MobileToc } from '@/components/mobile-toc';
+import { MobileActionsBar } from '@/components/mobile-actions-bar';
 import { ArticleSeries } from '@/components/article-series';
 import { ArticleFooterActions } from '@/components/article-footer-actions';
 import { ShareButtons } from '@/components/share-buttons';
@@ -14,19 +15,23 @@ import { BookmarkButton } from '@/components/bookmark-button';
 import { Newsletter } from '@/components/newsletter';
 import { RelatedArticles } from '@/components/related-articles';
 import { ArticleNav } from '@/components/article-nav';
-import { ReadingProgress } from '@/components/reading-progress';
+import { NextArticleTeaser } from '@/components/next-article-teaser';
 import { EstimatedRead } from '@/components/estimated-read';
 import { AuthorBio } from '@/components/author-bio';
+import { AuthorHoverCard } from '@/components/author-hover-card';
 import { ViewCount } from '@/components/view-count';
 import { HistoryTracker } from '@/components/history-tracker';
 import { Comments } from "@/components/comments";
 import { ArticleSchema } from '@/components/schema-org';
 import { ReadAloud } from '@/components/read-aloud';
+import { AiSummary } from '@/components/ai-summary';
+import { FocusModeToggle } from '@/components/focus-mode-toggle';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/components';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import { remarkAdmonition } from '@/components/mdx/remark-admonition';
+import { remarkGlossary } from '@/components/mdx/remark-glossary';
 import rehypeKatex from 'rehype-katex';
 import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
@@ -93,10 +98,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const { title, description, date, author, category, tags, image } = article.frontmatter;
+  const { title, description, date, author, category, tags, image, aiSummary } = article.frontmatter;
 
   return (
-    <article className="mx-auto min-h-screen max-w-6xl px-4 py-12 sm:px-6 md:py-16">
+    <article className="mx-auto min-h-screen max-w-[1400px] px-4 py-12 sm:px-6 md:py-16">
       <HistoryTracker slug={slug} />
       <ArticleSchema
         article={{
@@ -108,9 +113,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           image
         }}
       />
-      <ReadingProgress />
       <EstimatedRead readingTime={article.readingTime} />
-      
+
       {/* Back button */}
       <Link
         href="/articles"
@@ -131,7 +135,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               {category}
             </Link>
           )}
-          <ReadAloud title={title} className="ml-auto sm:ml-0" />
+          <div className="flex items-center gap-3 ml-auto sm:ml-0">
+            <FocusModeToggle />
+            <ReadAloud title={title} />
+          </div>
         </div>
 
         <h1 className="mb-6 text-4xl font-extrabold tracking-tight md:text-5xl lg:text-6xl text-foreground">
@@ -143,10 +150,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </p>
 
         <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-          <Link href={`/authors/${encodeURIComponent((author || 'Editor').toLowerCase())}`} className="flex items-center gap-2 hover:text-primary transition-colors">
-            <User className="h-4 w-4" />
-            <span className="font-medium text-foreground hover:text-primary transition-colors">{author}</span>
-          </Link>
+          <AuthorHoverCard authorName={author || 'Editor'}>
+            <Link href={`/authors/${encodeURIComponent((author || 'Editor').toLowerCase())}`} className="flex items-center gap-2 hover:text-primary transition-colors">
+              <User className="h-4 w-4" />
+              <span className="font-medium text-foreground hover:text-primary transition-colors">{author}</span>
+            </Link>
+          </AuthorHoverCard>
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
             <time dateTime={date}>{format(parseISO(date), 'MMMM d, yyyy')}</time>
@@ -175,7 +184,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <div className="flex flex-col lg:flex-row lg:gap-12 xl:gap-16 relative">
 
         {/* Sticky Social Share (Desktop Left) */}
-        <aside className="hidden xl:flex flex-col items-center gap-4 sticky top-32 h-fit pt-4">
+        <aside className="hidden xl:flex flex-col items-center gap-4 sticky top-32 h-fit pt-4 transition-opacity duration-300 focus-hide">
           <div className="flex flex-col items-center gap-4 rounded-full border border-border/50 bg-card p-3 shadow-sm">
             <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">Share</span>
             <div className="h-px w-8 bg-border"></div>
@@ -188,11 +197,16 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </aside>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0">
-          <MobileToc content={article.content} />
+        <div className="flex-1 min-w-0 transition-all duration-500 ease-in-out focus-center">
+          <MobileToc content={article.content} className="focus-hide" />
 
           {/* Series Outline */}
           <ArticleSeries currentArticle={article} allArticles={allArticles} />
+
+          {/* AI Summary Component */}
+          {aiSummary && aiSummary.length > 0 && (
+            <AiSummary summaryPoints={aiSummary} />
+          )}
 
           <div className="prose prose-zinc dark:prose-invert prose-lg md:prose-xl max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-img:rounded-xl">
             <MDXRemote
@@ -200,7 +214,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               components={mdxComponents}
               options={{
                 mdxOptions: {
-                  remarkPlugins: [remarkGfm, remarkMath, remarkAdmonition],
+                  remarkPlugins: [remarkGfm, remarkMath, remarkAdmonition, remarkGlossary],
                   rehypePlugins: [
                     rehypeSlug,
                     [rehypeAutolinkHeadings, {
@@ -244,10 +258,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         </div>
 
         {/* Sidebar */}
-        <aside className="hidden lg:block lg:w-64 flex-shrink-0">
+        <aside className="hidden lg:block lg:w-64 flex-shrink-0 transition-opacity duration-300 focus-hide">
           <TableOfContents content={article.content} />
         </aside>
       </div>
+
+      <MobileActionsBar title={title} slug={article.slug} />
+
+      {/* Slide-in Next Article Teaser */}
+      <NextArticleTeaser nextArticle={adjacentArticles.next} />
     </article>
   );
 }

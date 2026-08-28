@@ -1,189 +1,415 @@
 'use client';
 
-import * as React from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Command } from 'cmdk';
-import { Search, Folder, Tag, Moon, Sun, BookMarked, Monitor, History, FileText } from 'lucide-react';
+import { Search, FileText, Layout, Sun, Moon, Laptop, ArrowRight, Mic, MicOff, Clock } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { siteConfig } from '@/config/site';
 
-interface ArticleSearchItem {
-  slug: string;
+interface SearchResult {
   title: string;
+  slug: string;
   description: string;
-  category?: string;
+  date: string;
 }
 
 export function CommandPalette() {
-  const [open, setOpen] = React.useState(false);
-  const [query, setQuery] = React.useState('');
-  const [articles, setArticles] = React.useState<ArticleSearchItem[]>([]);
-  const [loading, setLoading] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const router = useRouter();
-  const { setTheme, theme } = useTheme();
+  const { setTheme } = useTheme();
 
-  // Fetch articles once when opened for the first time
-  React.useEffect(() => {
-    if (open && articles.length === 0 && !loading) {
-      setLoading(true);
-      fetch('/api/search')
-        .then(res => res.json())
-        .then(data => {
-          setArticles(data);
-          setLoading(false);
-        })
-        .catch(err => {
-          console.error("Failed to fetch articles for command palette", err);
-          setLoading(false);
-        });
+  // Initialize speech recognition if supported
+  useEffect(() => {
+    // Load recent searches
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('aiengineer_recent_searches');
+        if (saved) {
+          setRecentSearches(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error('Failed to parse recent searches', e);
+      }
     }
-  }, [open, articles.length, loading]);
 
-  // Toggle the menu when ⌘K is pressed
-  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setSpeechSupported(true);
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event: any) => {
+          const current = event.resultIndex;
+          const transcript = event.results[current][0].transcript;
+          setQuery(transcript);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
+  const toggleListening = () => {
+    if (!speechSupported || !recognitionRef.current) return;
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setQuery(''); // Clear previous query before listening
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  // Toggle palette with cmd+k or ctrl+k
+  useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       }
+      
+      if (e.key === 'Escape' && open) {
+        e.preventDefault();
+        setOpen(false);
+      }
     };
 
     document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, []);
+    
+    // Listen for custom event
+    const handleCustomEvent = () => setOpen(true);
+    window.addEventListener('open-command-palette', handleCustomEvent);
+    
+    return () => {
+      document.removeEventListener('keydown', down);
+      window.removeEventListener('open-command-palette', handleCustomEvent);
+    };
+  }, [open]);
 
-  // Listen for custom event to open the command palette
-  React.useEffect(() => {
-    const handleOpen = () => setOpen(true);
-    window.addEventListener('open-command-palette', handleOpen);
-    return () => window.removeEventListener('open-command-palette', handleOpen);
-  }, []);
+  // Debounced search
+  useEffect(() => {
+    if (query.trim() === '') {
+      setResults([]);
+      return;
+    }
 
-  const runCommand = React.useCallback(
-    (command: () => unknown) => {
-      setOpen(false);
-      command();
-    },
-    []
-  );
+    const timer = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setResults(data.results.slice(0, 5)); // Limit to 5 results
+          setSelectedIndex(0);
+        }
+      } catch (error) {
+        console.error('Search failed', error);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const runCommand = useCallback((command: () => void) => {
+    // Save to recent searches if there's a meaningful query
+    if (query.trim().length > 2) {
+      try {
+        const updatedSearches = [query.trim(), ...recentSearches.filter(s => s !== query.trim())].slice(0, 5);
+        setRecentSearches(updatedSearches);
+        localStorage.setItem('aiengineer_recent_searches', JSON.stringify(updatedSearches));
+      } catch (e) {
+        console.error('Failed to save recent search', e);
+      }
+    }
+
+    setOpen(false);
+    command();
+  }, [query, recentSearches]);
+
+  // Handle keyboard navigation inside the modal
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Calculate total clickable items based on view state
+      let totalItems = 0;
+      if (query !== '') {
+        totalItems = results.length;
+      } else {
+        totalItems = 7 + recentSearches.length; // 7 static links + recent searches
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev + 1) % totalItems);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev - 1 + totalItems) % totalItems);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (query !== '' && results.length > 0) {
+          runCommand(() => router.push(`/articles/${results[selectedIndex].slug}`));
+        } else if (query === '') {
+          if (selectedIndex < recentSearches.length) {
+            // User hit Enter on a recent search item -> populate query and search!
+            setQuery(recentSearches[selectedIndex]);
+          } else {
+            // Static routing mapping based on index (offset by recent searches)
+            const staticIndex = selectedIndex - recentSearches.length;
+            const staticRoutes = [
+              () => router.push('/'),
+              () => router.push('/articles'),
+              () => router.push('/newsletter'),
+              () => router.push('/history'),
+              () => setTheme('light'),
+              () => setTheme('dark'),
+              () => setTheme('system')
+            ];
+            if (staticRoutes[staticIndex]) {
+              runCommand(staticRoutes[staticIndex]);
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [open, query, results, selectedIndex, router, setTheme, runCommand]);
+
+  if (!open) return null;
 
   return (
     <>
-      <Command.Dialog
-        open={open}
-        onOpenChange={setOpen}
-        label="Global Command Menu"
-        className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] sm:pt-[20vh] bg-background/80 backdrop-blur-sm p-4"
-      >
-        <div className="w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
-          <Command.Input
-            placeholder="Type a command or search articles..."
+      <div 
+        className="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm transition-all"
+        onClick={() => setOpen(false)}
+      />
+      <div className="fixed left-[50%] top-[20%] z-[101] w-full max-w-lg translate-x-[-50%] overflow-hidden rounded-xl border border-border bg-card shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div className="flex items-center border-b border-border px-4 py-3">
+          <Search className="mr-3 h-5 w-5 text-muted-foreground" />
+          <input
+            className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none sm:text-sm"
+            placeholder={isListening ? "Listening..." : "Search articles, commands, or change theme..."}
             value={query}
-            onValueChange={setQuery}
-            className="flex h-14 w-full border-b border-border bg-transparent px-4 text-foreground placeholder:text-muted-foreground focus:outline-none"
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
           />
-          <Command.List className="max-h-[300px] overflow-y-auto overflow-x-hidden p-2">
-            <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
-              {loading ? 'Loading...' : 'No results found.'}
-            </Command.Empty>
-
-            {/* If there's a query and we have articles, show article results at the top */}
-            {query.length > 0 && articles.length > 0 && (
-              <Command.Group heading="Articles" className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                {articles.map((article) => (
-                  <Command.Item
-                    key={article.slug}
-                    value={article.title + ' ' + (article.description || '')}
-                    onSelect={() => runCommand(() => router.push(`/articles/${article.slug}`))}
-                    className="flex cursor-pointer flex-col items-start justify-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-                  >
-                    <div className="flex w-full items-center">
-                      <FileText className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="font-medium truncate">{article.title}</span>
-                      {article.category && (
-                        <span className="ml-auto ml-2 shrink-0 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-secondary-foreground">
-                          {article.category}
-                        </span>
-                      )}
-                    </div>
-                  </Command.Item>
-                ))}
-              </Command.Group>
-            )}
-
-            <Command.Group heading="Navigation" className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-              <Command.Item
-                onSelect={() => runCommand(() => router.push('/search'))}
-                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-              >
-                <Search className="mr-2 h-4 w-4" />
-                Advanced Search...
-              </Command.Item>
-              <Command.Item
-                onSelect={() => runCommand(() => router.push('/saved'))}
-                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-              >
-                <BookMarked className="mr-2 h-4 w-4" />
-                Saved Articles
-              </Command.Item>
-              <Command.Item
-                onSelect={() => runCommand(() => router.push('/history'))}
-                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-              >
-                <History className="mr-2 h-4 w-4" />
-                Reading History
-              </Command.Item>
-              <Command.Item
-                onSelect={() => runCommand(() => router.push('/tags'))}
-                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-              >
-                <Tag className="mr-2 h-4 w-4" />
-                Browse Tags
-              </Command.Item>
-            </Command.Group>
-
-            <Command.Group heading="Categories" className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-              {siteConfig.categories.map((category) => (
-                <Command.Item
-                  key={category}
-                  onSelect={() => runCommand(() => router.push(`/categories/${category.toLowerCase()}`))}
-                  className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-                >
-                  <Folder className="mr-2 h-4 w-4" />
-                  {category}
-                </Command.Item>
-              ))}
-            </Command.Group>
-
-            <Command.Group heading="Theme" className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-              <Command.Item
-                onSelect={() => runCommand(() => setTheme('light'))}
-                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-              >
-                <Sun className="mr-2 h-4 w-4" />
-                Light
-                {theme === 'light' && <span className="ml-auto text-xs text-muted-foreground">Active</span>}
-              </Command.Item>
-              <Command.Item
-                onSelect={() => runCommand(() => setTheme('dark'))}
-                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-              >
-                <Moon className="mr-2 h-4 w-4" />
-                Dark
-                {theme === 'dark' && <span className="ml-auto text-xs text-muted-foreground">Active</span>}
-              </Command.Item>
-              <Command.Item
-                onSelect={() => runCommand(() => setTheme('system'))}
-                className="flex cursor-pointer items-center rounded-md px-2 py-2 text-sm text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-              >
-                <Monitor className="mr-2 h-4 w-4" />
-                System
-                {theme === 'system' && <span className="ml-auto text-xs text-muted-foreground">Active</span>}
-              </Command.Item>
-            </Command.Group>
-          </Command.List>
+          {speechSupported && (
+            <button
+              onClick={toggleListening}
+              className={`mr-2 flex h-6 w-6 items-center justify-center rounded-md transition-colors ${
+                isListening
+                  ? 'bg-red-500/20 text-red-500 animate-pulse'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+              }`}
+              title={isListening ? "Stop listening" : "Voice Search"}
+            >
+              {isListening ? <MicOff className="h-3.5 w-3.5" /> : <Mic className="h-3.5 w-3.5" />}
+            </button>
+          )}
+          <kbd className="hidden sm:inline-flex items-center gap-1 rounded border border-border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+            <span className="text-xs">ESC</span>
+          </kbd>
         </div>
-      </Command.Dialog>
+
+        <div className="max-h-[400px] overflow-y-auto p-2">
+          {loading && (
+            <div className="py-6 text-center text-sm text-muted-foreground">
+              Searching...
+            </div>
+          )}
+          
+          {!loading && query !== '' && results.length === 0 && (
+            <div className="py-6 text-center text-sm text-muted-foreground">
+              No results found for &quot;{query}&quot;
+            </div>
+          )}
+
+          {!loading && results.length > 0 && (
+            <div className="mb-4">
+              <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Articles
+              </div>
+              {results.map((result, index) => (
+                <button
+                  key={result.slug}
+                  className={`group flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    index === selectedIndex
+                      ? 'bg-primary/20 text-primary border-transparent'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => router.push(`/articles/${result.slug}`))}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                >
+                  <FileText className={`h-4 w-4 shrink-0 ${index === selectedIndex ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <div className="flex flex-1 flex-col overflow-hidden">
+                    <span className="truncate font-medium">{result.title}</span>
+                    <span className="truncate text-xs text-muted-foreground/70">{result.description}</span>
+                  </div>
+                  <ArrowRight className={`h-4 w-4 shrink-0 transition-opacity ${index === selectedIndex ? 'opacity-100 text-primary' : 'opacity-0 group-hover:opacity-100'}`} />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {query === '' && (
+            <>
+              {recentSearches.length > 0 && (
+                <div className="mb-4">
+                  <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+                    <span>Recent Searches</span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setRecentSearches([]);
+                        localStorage.removeItem('aiengineer_recent_searches');
+                      }}
+                      className="text-[10px] hover:text-foreground transition-colors"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  {recentSearches.map((searchQuery, index) => (
+                    <button
+                      key={`recent-${index}`}
+                      className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                        selectedIndex === index
+                          ? 'bg-primary/20 text-primary'
+                          : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                      }`}
+                      onClick={() => setQuery(searchQuery)}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                    >
+                      <Clock className={`h-4 w-4 shrink-0 ${selectedIndex === index ? 'text-primary' : 'text-muted-foreground'}`} />
+                      <span className="flex-1 font-medium">{searchQuery}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="mb-4">
+                <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Navigation
+                </div>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === recentSearches.length + 0
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => router.push('/'))}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 0)}
+                >
+                  <Layout className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 0 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1 font-medium">Home</span>
+                </button>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === recentSearches.length + 1
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => router.push('/articles'))}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 1)}
+                >
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 1 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1 font-medium">Articles</span>
+                </button>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === recentSearches.length + 2
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => router.push('/newsletter'))}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 2)}
+                >
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 2 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1 font-medium">Newsletter</span>
+                </button>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === recentSearches.length + 3
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => router.push('/history'))}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 3)}
+                >
+                  <FileText className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 3 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1 font-medium">Reading History</span>
+                </button>
+              </div>
+
+              <div>
+                <div className="mb-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Theme
+                </div>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === recentSearches.length + 4
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => setTheme('light'))}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 4)}
+                >
+                  <Sun className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 4 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1 font-medium">Light Theme</span>
+                </button>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === recentSearches.length + 5
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => setTheme('dark'))}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 5)}
+                >
+                  <Moon className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 5 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1 font-medium">Dark Theme</span>
+                </button>
+                <button
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-colors ${
+                    selectedIndex === recentSearches.length + 6
+                      ? 'bg-primary/20 text-primary'
+                      : 'hover:bg-secondary hover:text-secondary-foreground text-foreground'
+                  }`}
+                  onClick={() => runCommand(() => setTheme('system'))}
+                  onMouseEnter={() => setSelectedIndex(recentSearches.length + 6)}
+                >
+                  <Laptop className={`h-4 w-4 shrink-0 ${selectedIndex === recentSearches.length + 6 ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <span className="flex-1 font-medium">System Theme</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
     </>
   );
 }

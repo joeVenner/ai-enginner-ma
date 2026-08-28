@@ -1,66 +1,71 @@
-import type { Metadata } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
-import './globals.css';
-import 'katex/dist/katex.min.css';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
-import { BackToTop } from "@/components/back-to-top";
-import { PageTransition } from "@/components/page-transition";
-import { Analytics } from "@/components/analytics";
-import { KeyboardShortcuts } from '@/components/keyboard-shortcuts';
-import { CommandPalette } from '@/components/command-palette';
-import TopLoader from '@/components/top-loader';
-import { siteConfig } from '@/config/site';
-import { WebSiteSchema } from '@/components/schema-org';
-import { SmoothScroll } from '@/components/smooth-scroll';
-import { NewsletterModal } from '@/components/newsletter-modal';
+import type { Metadata, Viewport } from "next";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { ThemeProvider } from "@/components/theme-provider";
+import { siteConfig } from "@/config/site";
+import { CommandPalette } from "@/components/command-palette";
+import { TextSelectionShare } from "@/components/text-selection-share";
+import { ScrollToTop } from "@/components/scroll-to-top";
+import { AnalyticsTracker } from "@/components/analytics-tracker";
+import { EasterEgg } from "@/components/easter-egg";
+import { GlobalScrollProgress } from "@/components/scroll-progress";
+import { ScrollPositionMemory } from "@/components/scroll-position-memory";
+import { LocalAnalyticsProvider } from "@/components/local-analytics-provider";
 
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
+// Optimized font loading
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({ 
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+  display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  variable: '--font-jetbrains-mono',
-  subsets: ['latin'],
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: 'AI Engineer | AI, Data & Software Engineering Insights',
+    default: siteConfig.name,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  authors: [
-    {
-      name: siteConfig.author.name,
-      url: siteConfig.links.twitter,
-    },
-  ],
-  creator: siteConfig.author.name,
+  authors: [{ name: "Yassir", url: siteConfig.url }],
+  creator: "Yassir",
   metadataBase: new URL(siteConfig.url),
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
+    type: "website",
+    locale: "en_US",
     url: siteConfig.url,
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
-    creator: siteConfig.author.twitter,
+    creator: "@yassir",
   },
-  alternates: {
-    types: {
-      'application/rss+xml': `${siteConfig.url}/rss.xml`,
-      'application/json': `${siteConfig.url}/feed.json`,
-      'application/atom+xml': `${siteConfig.url}/atom.xml`,
-    },
+  icons: {
+    icon: "/favicon.ico",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
 };
 
 export default function RootLayout({
@@ -69,30 +74,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${jetbrainsMono.variable} min-h-screen bg-background font-sans antialiased selection:bg-primary selection:text-primary-foreground`}
-      >
-        <WebSiteSchema />
-        <TopLoader />
-        <SmoothScroll />
+    <html lang="en" suppressHydrationWarning className="scroll-smooth">
+      <body className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen flex flex-col selection:bg-primary/20 selection:text-primary`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <KeyboardShortcuts />
-          <CommandPalette />
-          <div className="flex min-h-screen flex-col">
+          <div className="relative flex min-h-screen flex-col bg-background">
+            <GlobalScrollProgress />
+            <ScrollPositionMemory />
+            <LocalAnalyticsProvider />
+            <AnalyticsTracker />
             <Header />
-            <PageTransition>{children}</PageTransition>
+            <CommandPalette />
+            <TextSelectionShare />
+            <ScrollToTop />
+            <EasterEgg />
+            <main id="main-content" className="flex-1 w-full relative z-0 pt-16">
+              {children}
+            </main>
             <Footer />
-            <BackToTop />
-            <NewsletterModal />
           </div>
         </ThemeProvider>
-        <Analytics />
       </body>
     </html>
   );

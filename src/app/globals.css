@@ -373,3 +373,32 @@ pre code, .prose pre code {
 .high-contrast img {
   filter: contrast(120%) grayscale(10%);
 }
+
+/* Focus Mode */
+:root.focus-mode .focus-hide {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+:root.focus-mode .focus-center {
+  max-width: 800px !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+:root.focus-mode header nav,
+:root.focus-mode header .right-actions {
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+:root.focus-mode header:hover nav,
+:root.focus-mode header:hover .right-actions {
+  opacity: 1;
+}
+
+/* Utilities */
+.capitalize-first:first-letter {
+  text-transform: capitalize;
+}

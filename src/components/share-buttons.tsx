@@ -1,9 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Share, MessageSquare, Link2, Check, MessageCircle } from 'lucide-react';
 import { siteConfig } from '@/config/site';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/tooltip';
+import { CopyLinkButton } from './copy-link-button';
 
 interface ShareButtonsProps {
   title: string;
@@ -11,107 +9,76 @@ interface ShareButtonsProps {
 }
 
 export function ShareButtons({ title, slug }: ShareButtonsProps) {
-  const [copied, setCopied] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  
-  // Create URL handling SSR correctly
-  const url = typeof window !== 'undefined' 
-    ? `${window.location.origin}/articles/${slug}` 
-    : `${siteConfig.url}/articles/${slug}`;
+  const url = `${siteConfig.url}/articles/${slug}`;
+  const encodedUrl = encodeURIComponent(url);
+  const encodedTitle = encodeURIComponent(title);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const twitterUrl = `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+  const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+  const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+
+  const trackShare = () => {
+    try {
+      const metricsStr = localStorage.getItem('reader-metrics-v1');
+      if (metricsStr) {
+         const metrics = JSON.parse(metricsStr);
+         if (!metrics.shares) metrics.shares = {};
+         metrics.shares[slug] = (metrics.shares[slug] || 0) + 1;
+         localStorage.setItem('reader-metrics-v1', JSON.stringify(metrics));
+      } else {
+         localStorage.setItem('reader-metrics-v1', JSON.stringify({
+           pageViews: 0,
+           articleViews: {},
+           timeOnSite: 0,
+           lastVisited: null,
+           bookmarks: {},
+           claps: {},
+           shares: { [slug]: 1 }
+         }));
+      }
+    } catch (e) {
+      console.error('Error tracking share', e);
+    }
   };
 
-  const shareText = encodeURIComponent(`I'm reading "${title}" on AI Engineer\n\n`);
-  const encodedUrl = encodeURIComponent(url);
-
-  if (!mounted) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="mr-2 text-sm font-medium text-muted-foreground">Share:</span>
-        <div className="h-9 w-9 rounded-full bg-secondary"></div>
-        <div className="h-9 w-9 rounded-full bg-secondary"></div>
-        <div className="h-9 w-9 rounded-full bg-secondary"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex items-center gap-2">
-      <span className="mr-2 text-sm font-medium text-muted-foreground">Share:</span>
+    <div className="flex flex-wrap items-center gap-2">
+      <a
+        href={twitterUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={trackShare}
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-secondary/30 text-muted-foreground transition-all hover:bg-[#1DA1F2] hover:text-white hover:border-[#1DA1F2]"
+        aria-label="Share on Twitter"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+      </a>
       
-      <TooltipProvider delayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              href="#comments-section"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <MessageCircle className="h-4 w-4" />
-              <span className="sr-only">Jump to comments</span>
-            </a>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Jump to comments</p>
-          </TooltipContent>
-        </Tooltip>
+      <a
+        href={linkedinUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={trackShare}
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-secondary/30 text-muted-foreground transition-all hover:bg-[#0077b5] hover:text-white hover:border-[#0077b5]"
+        aria-label="Share on LinkedIn"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+      </a>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              href={`https://twitter.com/intent/tweet?text=${shareText}&url=${encodedUrl}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span className="sr-only">Share on Twitter</span>
-            </a>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Share on Twitter</p>
-          </TooltipContent>
-        </Tooltip>
+      <a
+        href={facebookUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={trackShare}
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-secondary/30 text-muted-foreground transition-all hover:bg-[#1877F2] hover:text-white hover:border-[#1877F2]"
+        aria-label="Share on Facebook"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+      </a>
 
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <a
-              href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodedUrl}&title=${encodeURIComponent(title)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <Share className="h-4 w-4" />
-              <span className="sr-only">Share on LinkedIn</span>
-            </a>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Share on LinkedIn</p>
-          </TooltipContent>
-        </Tooltip>
-
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              onClick={handleCopyLink}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {copied ? <Check className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
-              <span className="sr-only">Copy link</span>
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{copied ? 'Copied!' : 'Copy link'}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <div className="h-4 w-px bg-border/50 mx-1 hidden sm:block"></div>
+      
+      <CopyLinkButton slug={slug} className="ml-1" />
     </div>
   );
 }
