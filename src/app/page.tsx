@@ -61,7 +61,7 @@ export default async function Home() {
             Hero. Asymmetric split: the argument on the left, the lead article
             on the right. Deliberately no eyebrow, no fake product mockup.
         ---------------------------------------------------------------- */}
-        <section className="grid grid-cols-1 items-center gap-12 pt-12 pb-20 md:pt-20 md:pb-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-16">
+        <section className="grid grid-cols-1 items-center gap-10 pt-10 pb-16 md:pt-20 md:pb-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-16">
           <div className="flex flex-col items-start">
             <FadeIn onMount direction="none">
               <h1 className="font-heading text-4xl font-bold leading-[1.08] tracking-tight text-balance text-foreground md:text-5xl lg:text-6xl">
@@ -69,7 +69,7 @@ export default async function Home() {
               </h1>
             </FadeIn>
 
-            <FadeIn onMount delay={0.08} className="mt-6 max-w-xl">
+            <FadeIn onMount delay={0.08} className="mt-5 max-w-xl">
               <p className="text-lg leading-relaxed text-muted-foreground md:text-xl">
                 Technical deep dives, architecture patterns, and the tooling
                 reshaping how we build software.
@@ -79,7 +79,7 @@ export default async function Home() {
             <FadeIn
               onMount
               delay={0.16}
-              className="mt-9 flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+              className="mt-8 flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center"
             >
               <Link
                 href="/articles"
@@ -114,13 +114,13 @@ export default async function Home() {
             </div>
             
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-rows-2">
-              <Link 
-                href="/categories/agentic ai" 
-                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border bg-card p-8 transition-colors hover:border-brand/50 md:col-span-2 lg:row-span-2 min-h-[300px]"
+              <Link
+                href="/categories/agentic ai"
+                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border bg-card p-6 sm:p-8 transition-colors hover:border-brand/50 md:col-span-2 lg:row-span-2 min-h-[220px] md:min-h-[300px]"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-brand/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                <div className="absolute right-6 top-6 rounded-full bg-muted p-3 text-muted-foreground transition-colors group-hover:bg-brand/10 group-hover:text-brand">
-                  <Network className="h-6 w-6" />
+                <div className="absolute right-5 top-5 sm:right-6 sm:top-6 rounded-full bg-muted p-2 sm:p-3 text-muted-foreground transition-colors group-hover:bg-brand/10 group-hover:text-brand">
+                  <Network className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div className="relative z-10 mt-auto">
                   <h3 className="font-heading text-2xl font-bold text-foreground transition-colors group-hover:text-brand">
@@ -131,10 +131,10 @@ export default async function Home() {
                   </p>
                 </div>
               </Link>
-              
-              <Link 
-                href="/categories/llms" 
-                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border bg-card p-6 transition-colors hover:border-brand/50 min-h-[180px]"
+
+              <Link
+                href="/categories/llms"
+                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-6 transition-colors hover:border-brand/50 min-h-[160px] md:min-h-[180px]"
               >
                 <div className="absolute right-4 top-4 text-muted-foreground transition-colors group-hover:text-brand">
                   <Cpu className="h-5 w-5" />
@@ -149,9 +149,9 @@ export default async function Home() {
                 </div>
               </Link>
 
-              <Link 
-                href="/categories/data" 
-                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border bg-card p-6 transition-colors hover:border-brand/50 min-h-[180px]"
+              <Link
+                href="/categories/data"
+                className="group relative flex flex-col justify-end overflow-hidden rounded-2xl border border-border bg-card p-5 sm:p-6 transition-colors hover:border-brand/50 min-h-[160px] md:min-h-[180px]"
               >
                 <div className="absolute right-4 top-4 text-muted-foreground transition-colors group-hover:text-brand">
                   <Database className="h-5 w-5" />

@@ -93,7 +93,7 @@ export function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
         }`}
       >
         {articles.map((article) => (
-          <div key={article.slug} className="w-full shrink-0 snap-center sm:snap-start">
+          <div key={article.slug} className="w-[85vw] sm:w-full shrink-0 snap-center sm:snap-start">
             <FeaturedCover article={article} />
           </div>
         ))}
