@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Header dropdown menu to navigate categories.
 
 ### Changed
+- Redesigned the landing page hero and added an editorial featured article carousel.
 - Replaced standard `<a>` and `<img>` tags in MDX to utilize the new optimized components.
 - Removed legacy articles, keeping only "NVIDIA Acquires Hugging Face" and "GMI MiniMaxthon 2026".
 - Strict category alignment between content frontmatter and Header/Footer navigation.
